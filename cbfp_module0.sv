@@ -10,11 +10,11 @@ module cbfp_module0 #(
   input  logic rstn,
   input  logic din_valid,
 
-  input  logic signed [IN_WIDTH-1:0] pre_bfly02_real [15:0],
+  input  logic signed [IN_WIDTH-1:0] pre_bfly02_real [15:0], // step0_2의 fft 곱셈 결과 입력
   input  logic signed [IN_WIDTH-1:0] pre_bfly02_imag [15:0],
 
   output logic         valid_out,
-  output logic signed [OUT_WIDTH-1:0] bfly02_real [15:0],
+  output logic signed [OUT_WIDTH-1:0] bfly02_real [15:0], // CBFP 처리 후 최종 정규화된 출력
   output logic signed [OUT_WIDTH-1:0] bfly02_imag [15:0]
 );
 
