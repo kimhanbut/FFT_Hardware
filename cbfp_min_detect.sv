@@ -8,7 +8,7 @@ module cbfp_min_detect #(
   // 16개 중 가장 작은 magnitude index -> 해당 블록에서 사용할 shift amount
 );
 
-  // Intermediate levels of comparator tree
+  // Intermediate levels of comparator tree : 16 -> 8 -> 4 -> 2 -> 1 계층 트리
   logic [MAG_WIDTH-1:0] stage1 [7:0]; 
   logic [MAG_WIDTH-1:0] stage2 [3:0];
   logic [MAG_WIDTH-1:0] stage3 [1:0];
@@ -18,6 +18,7 @@ module cbfp_min_detect #(
     genvar i;
     for (i = 0; i < 8; i++) begin : STAGE1
       assign stage1[i] = (mag_in[2*i] < mag_in[2*i+1]) ? mag_in[2*i] : mag_in[2*i+1];
+      // 2개씩 비교해서 작은 값을 stage1에 저장
     end
   endgenerate
 
@@ -34,5 +35,5 @@ module cbfp_min_detect #(
 
   // Stage 4: 2 → 1
   assign min_mag = (stage3[0] < stage3[1]) ? stage3[0] : stage3[1];
-
+  // 최종적으로 가장 작은 magnitude index를 min_mag에 저장
 endmodule
