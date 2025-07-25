@@ -22,7 +22,7 @@ module shift_reg #(
     logic [$clog2(SIZE+1)-1:0] count;
     logic bufly_en_reg;
 
-    always_ff @(negedge clk or negedge rstn) begin
+    always_ff @(posedge clk or negedge rstn) begin
         if (!rstn) begin
             count <= 0;
             bufly_en_reg <= 0;
