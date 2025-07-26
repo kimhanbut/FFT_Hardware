@@ -2,10 +2,10 @@ module butterfly01 (
     input  logic         clk,
     input  logic         rstn,
     input  logic         valid_in,
-    input  logic signed [9:0] input_real_a [15:0],  // 입력 A의 실수부
-    input  logic signed [9:0] input_imag_a [15:0],  // 입력 A의 허수부
-    input  logic signed [9:0] input_real_b [15:0],  // 입력 B의 실수부
-    input  logic signed [9:0] input_imag_b [15:0],  // 입력 B의 허수부
+    input  logic signed [9:0] input_real_a [15:0],  // 입력 A의 실수부, shif reg입력
+    input  logic signed [9:0] input_imag_a [15:0],  // 입력 A의 허수부, shif reg입력
+    input  logic signed [9:0] input_real_b [15:0],  // 입력 B의 실수부, 직접 입력
+    input  logic signed [9:0] input_imag_b [15:0],  // 입력 B의 허수부, 직접 입력
 
     output logic         valid_out,  // 출력 유효 신호
     output logic signed [12:0] output_real_add [15:0], // (A + B) × Twiddle 결과 (실수부)
