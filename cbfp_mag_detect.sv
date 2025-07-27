@@ -4,8 +4,8 @@ module cbfp_mag_detect #(
   parameter DATA_WIDTH = 23, // 입력 비트폭 23비트
   parameter MAG_WIDTH  = $clog2(DATA_WIDTH) + 1 // clog2(23) + 1 = 5 ~ 6 bit : 위치 index 반환용
 )(
-  input  logic signed [DATA_WIDTH-1:0] din   [15:0], // 16개씩 처리
-  output logic        [MAG_WIDTH-1:0]  mag_out [15:0] // 각 입력에 대한 magnitude index 출력
+  input  logic signed [DATA_WIDTH-1:0] din   [0:15], // 16개씩 처리
+  output logic        [MAG_WIDTH-1:0]  mag_out [0:15] // 각 입력에 대한 magnitude index 출력
 );
 
   // Case-style leading one detector
