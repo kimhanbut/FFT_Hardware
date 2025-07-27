@@ -8,8 +8,10 @@
 - CBFP design(verification X)
 ---
 ### 7/26 진행사항
-- step0_1 disign completion, (rough verification)
+- step0_1 disign complete, (rough verification)
 ---
 ### 7/27 진행사항 및 유의사항
 - step간 merge시에 butterfly output이 그 step이 내보내는 butterfly control signal(다음 단의 din_valid)보다 한 클럭 delay 되어있음에 유의  
   즉, butterfly control signal을 1clk delay 시켜서 사용해야 함
+- butterfly_2 design complete(rough verification)
+- cbfp revision(error 아직 있음)
