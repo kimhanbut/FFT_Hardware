@@ -3,7 +3,7 @@
 module cbfp_min_detect #(
   parameter MAG_WIDTH = 6 // magnitude 값의 비트폭
 )(
-  input  logic [MAG_WIDTH-1:0] mag_in [15:0], // mag 에서 내보낸 index 데이터
+  input  logic [MAG_WIDTH-1:0] mag_in [0:15], // mag 에서 내보낸 index 데이터
   output logic [MAG_WIDTH-1:0] min_mag 
   // 16개 중 가장 작은 magnitude index -> 해당 블록에서 사용할 shift amount
 );
