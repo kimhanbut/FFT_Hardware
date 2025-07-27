@@ -1,6 +1,7 @@
 
 //this file is twiddle factor rom code for post-step0_2
 // there are 512 twiddle factor per real, imaginary
+`timescale 1ns/1ps
 
 module twf_0_rom (
     input  logic         clk,
