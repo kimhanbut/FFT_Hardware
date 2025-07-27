@@ -5,18 +5,18 @@ module cbfp_shift #(
   parameter OUT_WIDTH = 13,
   parameter SHIFT_WIDTH = 5  // shift amount 의 최대 표현 비트수
 )(
-  input  logic signed [IN_WIDTH-1:0] in_real [15:0],
-  input  logic signed [IN_WIDTH-1:0] in_imag [15:0], // pre_bfly02에서 나온 결과값 : CBFP에 입력되는 값
+  input  logic signed [IN_WIDTH-1:0] in_real [0:15],
+  input  logic signed [IN_WIDTH-1:0] in_imag [0:15], // pre_bfly02에서 나온 결과값 : CBFP에 입력되는 값
   input  logic [SHIFT_WIDTH-1:0] shift_amt_re, // 쉬프트 얼마나 할지 : shift amount
   input  logic [SHIFT_WIDTH-1:0] shift_amt_im,
 
-  output logic signed [OUT_WIDTH-1:0] out_real [15:0], // shift, saturation 후 출력
-  output logic signed [OUT_WIDTH-1:0] out_imag [15:0]
+  output logic signed [OUT_WIDTH-1:0] out_real [0:15], // shift, saturation 후 출력
+  output logic signed [OUT_WIDTH-1:0] out_imag [0:15]
 );
 
   // 내부 변수
-  logic signed [IN_WIDTH-1:0] shifted_r [15:0]; // shift 된 값
-  logic signed [IN_WIDTH-1:0] shifted_i [15:0];
+  logic signed [IN_WIDTH-1:0] shifted_r [0:15]; // shift 된 값
+  logic signed [IN_WIDTH-1:0] shifted_i [0:15];
 
   // shift 연산
   always_comb begin
@@ -38,7 +38,7 @@ module cbfp_shift #(
       else if (shifted_r[i] < MIN_VAL)
         out_real[i] = MIN_VAL;
       else
-        out_real[i] = shifted_r[i][OUT_WIDTH-1:0];
+        out_real[i] = $signed(shifted_r[i]);
 
       // Imag part saturation
       if (shifted_i[i] > MAX_VAL)
@@ -46,7 +46,7 @@ module cbfp_shift #(
       else if (shifted_i[i] < MIN_VAL)
         out_imag[i] = MIN_VAL;
       else
-        out_imag[i] = shifted_i[i][OUT_WIDTH-1:0];
+        out_imag[i] = $signed(shifted_i[i]);
     end
   end
 
