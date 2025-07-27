@@ -3,24 +3,30 @@
 // there are 512 twiddle factor per real, imaginary
 
 module twf_0_rom (
-    input  logic       clk,
-    input  logic       rstn,
-    input  logic [8:0] address,
-    output logic [8:0] twf_re,
-    output logic [8:0] twf_im
+    input  logic         clk,
+    input  logic         rstn,
+    input  logic  [8:0]  address,           // base address
+    output logic signed [8:0] twf_re[15:0], // 16개의 twiddle real
+    output logic signed [8:0] twf_im[15:0]  // 16개의 twiddle imag
 );
 
-    logic signed [8:0] twf_m0_im[511:0];
-    logic signed [8:0] twf_m0_re[511:0];
+    // Twiddle factor ROM
+    logic signed [8:0] twf_m0_re[0:511];
+    logic signed [8:0] twf_m0_im[0:511];
 
+    integer i;
 
-    always @(posedge clk, negedge rstn) begin
+    always_ff @(posedge clk or negedge rstn) begin
         if (!rstn) begin
-            twf_re <= 0;
-            twf_im <= 0;
+            for (i = 0; i < 16; i++) begin
+                twf_re[i] <= '0;
+                twf_im[i] <= '0;
+            end
         end else begin
-            twf_re <= twf_m0_re[address];
-            twf_im <= twf_m0_im[address];
+            for (i = 0; i < 16; i++) begin
+                twf_re[i] <= twf_m0_re[address + i];
+                twf_im[i] <= twf_m0_im[address + i];
+            end
         end
     end
 
