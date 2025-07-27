@@ -4,8 +4,8 @@ module twiddle_mul (
     input  logic signed  [8:0] twf_re_in  [15:0],
     input  logic signed  [8:0] twf_im_in  [15:0],
 
-    output logic signed [27:0] data_re_out [15:0],
-    output logic signed [27:0] data_im_out [15:0]
+    output logic signed [22:0] data_re_out [15:0],
+    output logic signed [22:0] data_im_out [15:0]
 );
 
     always_comb begin
