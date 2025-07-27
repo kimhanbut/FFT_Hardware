@@ -16,8 +16,8 @@ module shift_reg #(
 );
 
     // FIFO 버퍼
-    logic [DATA_WIDTH-1:0] shift_i [0:SIZE-1][0:IN_SIZE-1];
-    logic [DATA_WIDTH-1:0] shift_q [0:SIZE-1][0:IN_SIZE-1];
+    logic [DATA_WIDTH-1:0] signed shift_i [0:SIZE-1][0:IN_SIZE-1];
+    logic [DATA_WIDTH-1:0] signed shift_q [0:SIZE-1][0:IN_SIZE-1];
 
     logic [$clog2(SIZE+1)-1:0] count;
     logic bufly_en_reg;
