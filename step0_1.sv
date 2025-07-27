@@ -1,3 +1,4 @@
+
 `timescale 1ns / 1ps
 
 module step0_1 (
@@ -9,31 +10,48 @@ module step0_1 (
     input  logic signed [ 9:0] din_add_i [0:15],
     input  logic signed [ 9:0] din_sub_i [0:15],
 
-    output logic signed [10:0] dout_add_r[0:15],
-    output logic signed [10:0] dout_add_i[0:15],
-    output logic signed [10:0] dout_sub_r[0:15],
-    output logic signed [10:0] dout_sub_i[0:15]
+    output logic signed [12:0] dout_add_r[0:15],
+    output logic signed [12:0] dout_add_i[0:15],
+    output logic signed [12:0] dout_sub_r[0:15],
+    output logic signed [12:0] dout_sub_i[0:15]
 );
 
     logic signed [9:0] sr8_din_i[0:15];
     logic signed [9:0] sr8_din_q[0:15];
-    
+
     logic signed [9:0] sr16_dout_i[0:15];
     logic signed [9:0] sr16_dout_q[0:15];
 
     logic signed [9:0] sr8_dout_i[0:15];
     logic signed [9:0] sr8_dout_q[0:15];
-    logic signed [9:0] sr_mux_i[0:15];
-    logic signed [9:0] sr_mux_q[0:15];
-
 
     logic signed [9:0] bf_in_i[0:15];
     logic signed [9:0] bf_in_q[0:15];
-    
-    
+
     logic bufly_ctrl, sr_ctrl, sr_256_out_start;
     logic [4:0] clk_cnt;
 
+
+logic [5:0] valid_cnt;
+logic       local_valid;
+
+always_ff @(posedge clk or negedge rstn) begin
+    if (!rstn) begin
+        valid_cnt   <= 0;
+        local_valid <= 0;
+    end else begin
+        if (din_valid && valid_cnt == 0)
+            valid_cnt <= 32;
+        else if (valid_cnt > 0)
+            valid_cnt <= valid_cnt - 1;
+
+        local_valid <= (valid_cnt > 0);
+    end
+end
+
+
+
+    // 8-point Shift Register
     shift_reg #(
         .DATA_WIDTH(10),
         .SIZE(8),
@@ -41,15 +59,15 @@ module step0_1 (
     ) SR_128 (
         .clk(clk),
         .rstn(rstn),
-        .din_valid(sr_ctrl),//sr_256에서도 받아야 함
-        .din_i(sr8_din_i),  // 병렬 입력
+        .din_valid(din_valid | local_valid),
+        .din_i(sr8_din_i),
         .din_q(sr8_din_q),
-        .dout_i(sr8_dout_i),  // FIFO 가장 앞의 데이터
+        .dout_i(sr8_dout_i),
         .dout_q(sr8_dout_q),
         .bufly_enable(bufly_ctrl)
     );
 
-
+    // 16-point Shift Register
     shift_reg #(
         .DATA_WIDTH(10),
         .SIZE(16),
@@ -57,63 +75,72 @@ module step0_1 (
     ) SR_256 (
         .clk(clk),
         .rstn(rstn),
-        .din_valid(din_valid),
-        .din_i(din_sub_r),  // 병렬 입력
+        .din_valid(din_valid | local_valid),
+        .din_i(din_sub_r),
         .din_q(din_sub_i),
-        .dout_i(sr16_dout_i),  
+        .dout_i(sr16_dout_i),
         .dout_q(sr16_dout_q),
-        .bufly_enable(sr_256_out_start)// sr_128에 주기 위해 필요함
+        .bufly_enable(sr_256_out_start)
     );
 
-
+    // Butterfly
     butterfly01 BF_1 (
         .clk(clk),
         .rstn(rstn),
         .valid_in(bufly_ctrl),
-        .input_real_a(sr8_dout_i),  // 입력 A의 실수부-sr
-        .input_imag_a(sr8_dout_q),  // 입력 A의 허수부-sr
-        .input_real_b(bf_in_i),  // 입력 B의 실수부-direct
-        .input_imag_b(bf_in_q),  // 입력 B의 허수부-direct
-
-        .valid_out(),  // 출력 유효 신호
-        .output_real_add(dout_add_r),  // (A + B) × Twiddle 결과 (실수부)
-        .output_imag_add(dout_add_i),  // (A + B) × Twiddle 결과 (허수부)
-        .output_real_diff(dout_sub_r),  // (A - B) × Twiddle 결과 (실수부)
-        .output_imag_diff(dout_sub_i)  // (A - B) × Twiddle 결과 (허수부)
+        .input_real_a(sr8_dout_i),
+        .input_imag_a(sr8_dout_q),
+        .input_real_b(bf_in_i),
+        .input_imag_b(bf_in_q),
+        .valid_out(),
+        .output_real_add(dout_add_r),
+        .output_imag_add(dout_add_i),
+        .output_real_diff(dout_sub_r),
+        .output_imag_diff(dout_sub_i)
     );
 
 
 
-    always @(posedge clk, negedge rstn) begin
+
+    // Clock counter
+    always_ff @(posedge clk or negedge rstn) begin
+        if (!rstn)
+            clk_cnt <= 0;
+        else if (din_valid)
+            clk_cnt <= clk_cnt + 1;
+        else
+            clk_cnt <= clk_cnt;
+    end
+
+    // Sequential control to avoid latch
+    always_ff @(posedge clk or negedge rstn) begin
         if (!rstn) begin
-            clk_cnt <= 0;
+            sr_ctrl     <= 0;
+            sr8_din_i   <= '{default:0};
+            sr8_din_q   <= '{default:0};
+            bf_in_i     <= '{default:0};
+            bf_in_q     <= '{default:0};
         end else begin
-            if(din_valid)begin
-                clk_cnt<= clk_cnt + 1;
-            end else
-            clk_cnt <= 0;
+            if (clk_cnt < 16) begin
+                sr_ctrl   <= din_valid;
+                sr8_din_i <= din_add_r;
+                sr8_din_q <= din_add_i;
+                bf_in_i   <= din_add_r;
+                bf_in_q   <= din_add_i;
+            end else if (clk_cnt >= 16) begin
+                sr_ctrl   <= sr_256_out_start;
+                sr8_din_i <= sr16_dout_i;
+                sr8_din_q <= sr16_dout_q;
+                bf_in_i   <= sr16_dout_i;
+                bf_in_q   <= sr16_dout_q;
+            end else begin
+                sr_ctrl   <= 0;
+                sr8_din_i <= '{default:0};
+                sr8_din_q <= '{default:0};
+                bf_in_i   <= '{default:0};
+                bf_in_q   <= '{default:0};
+            end
         end
     end
-
-
-    always @(*) begin
-        if(clk_cnt<8)begin
-            sr_ctrl = din_valid;
-            sr8_din_i = din_add_r;
-            sr8_din_q = din_add_i;
-            bf_in_i = din_add_r;
-            bf_in_q = din_add_i;
-
-        end else if (clk_cnt>=8 && clk_cnt<16) begin
-            sr_ctrl = sr_256_out_start;
-            sr8_din_i = sr16_dout_i;
-            sr8_din_q = sr16_dout_q;
-            bf_in_i = sr16_dout_i;
-            bf_in_q = sr16_dout_q;
-        end else clk_cnt = 0;
-    end
-
-
-
 
 endmodule
