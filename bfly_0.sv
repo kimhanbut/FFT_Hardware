@@ -1,3 +1,4 @@
+
 `timescale 1ns / 1ps
 module bf0_parallel #(
     parameter IN_DATA_W  = 9,
@@ -9,24 +10,24 @@ module bf0_parallel #(
     input  logic                         clk,
     input  logic                         rstn,
     input  logic                         valid_in,
-    input  logic signed [ IN_DATA_W-1:0] input_sr_real  [UNIT_SIZE-1:0],
-    input  logic signed [ IN_DATA_W-1:0] input_sr_imag  [UNIT_SIZE-1:0],
-    input  logic signed [ IN_DATA_W-1:0] input_org_real [UNIT_SIZE-1:0],
-    input  logic signed [ IN_DATA_W-1:0] input_org_imag [UNIT_SIZE-1:0],
+    input  logic signed [ IN_DATA_W-1:0] input_sr_real  [0:UNIT_SIZE-1],
+    input  logic signed [ IN_DATA_W-1:0] input_sr_imag  [0:UNIT_SIZE-1],
+    input  logic signed [ IN_DATA_W-1:0] input_org_real [0:UNIT_SIZE-1],
+    input  logic signed [ IN_DATA_W-1:0] input_org_imag [0:UNIT_SIZE-1],
     output logic                         valid_out,
-    output logic signed [OUT_DATA_W-1:0] output_add_real[UNIT_SIZE-1:0],
-    output logic signed [OUT_DATA_W-1:0] output_add_imag[UNIT_SIZE-1:0],
-    output logic signed [OUT_DATA_W-1:0] output_sub_real[UNIT_SIZE-1:0],
-    output logic signed [OUT_DATA_W-1:0] output_sub_imag[UNIT_SIZE-1:0]
+    output logic signed [OUT_DATA_W-1:0] output_add_real[0:UNIT_SIZE-1],
+    output logic signed [OUT_DATA_W-1:0] output_add_imag[0:UNIT_SIZE-1],
+    output logic signed [OUT_DATA_W-1:0] output_sub_real[0:UNIT_SIZE-1],
+    output logic signed [OUT_DATA_W-1:0] output_sub_imag[0:UNIT_SIZE-1]
 );
 
     // ========================
     // 1. 입력 레지스터 선언
     // ========================
-    logic signed [IN_DATA_W-1:0] sr_real_reg [UNIT_SIZE-1:0];
-    logic signed [IN_DATA_W-1:0] sr_imag_reg [UNIT_SIZE-1:0];
-    logic signed [IN_DATA_W-1:0] org_real_reg[UNIT_SIZE-1:0];
-    logic signed [IN_DATA_W-1:0] org_imag_reg[UNIT_SIZE-1:0];
+    logic signed [IN_DATA_W-1:0] sr_real_reg [0:UNIT_SIZE-1];
+    logic signed [IN_DATA_W-1:0] sr_imag_reg [0:UNIT_SIZE-1];
+    logic signed [IN_DATA_W-1:0] org_real_reg[0:UNIT_SIZE-1];
+    logic signed [IN_DATA_W-1:0] org_imag_reg[0:UNIT_SIZE-1];
     logic                        valid_reg;
 
     // ========================
@@ -61,8 +62,8 @@ module bf0_parallel #(
     // ========================
     // 4. 연산 (지연된 입력 기준)
     // ========================
-    logic signed [OUT_DATA_W-1:0] add_real[UNIT_SIZE-1:0], add_imag[UNIT_SIZE-1:0];
-    logic signed [OUT_DATA_W-1:0] sub_real[UNIT_SIZE-1:0], sub_imag[UNIT_SIZE-1:0];
+    logic signed [OUT_DATA_W-1:0] add_real[0:UNIT_SIZE-1], add_imag[0:UNIT_SIZE-1];
+    logic signed [OUT_DATA_W-1:0] sub_real[0:UNIT_SIZE-1], sub_imag[0:UNIT_SIZE-1];
 
     always_comb begin
         for (int i = 0; i < CLK_CNT; i++) begin
@@ -101,5 +102,3 @@ module bf0_parallel #(
     end
 
 endmodule
-
-
