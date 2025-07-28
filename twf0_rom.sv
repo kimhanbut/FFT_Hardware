@@ -7,8 +7,8 @@ module twf_0_rom (
     input  logic         clk,
     input  logic         rstn,
     input  logic  [8:0]  address,           // base address
-    output logic signed [8:0] twf_re[15:0], // 16개의 twiddle real
-    output logic signed [8:0] twf_im[15:0]  // 16개의 twiddle imag
+    output logic signed [8:0] twf_re[0:15], // 16개의 twiddle real
+    output logic signed [8:0] twf_im[0:15]  // 16개의 twiddle imag
 );
 
     // Twiddle factor ROM
