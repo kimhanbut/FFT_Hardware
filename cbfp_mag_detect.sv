@@ -1,54 +1,73 @@
 `timescale 1ns/1ps
 
 module cbfp_mag_detect #(
-  parameter DATA_WIDTH = 23, // 입력 비트폭 23비트
-  parameter MAG_WIDTH  = $clog2(DATA_WIDTH) + 1 // clog2(23) + 1 = 5 ~ 6 bit : 위치 index 반환용
+  parameter DATA_WIDTH = 23,   // 입력 비트 폭 (signed)
+  parameter MAG_WIDTH  = 5     // 출력: leading 0 or 1 count index (0~22)
 )(
-  input  logic signed [DATA_WIDTH-1:0] din   [0:15], // 16개씩 처리
-  output logic        [MAG_WIDTH-1:0]  mag_out [0:15] // 각 입력에 대한 magnitude index 출력
+  input  logic signed [DATA_WIDTH-1:0] din [0:15],
+  output logic        [MAG_WIDTH-1:0]  mag_out [0:15]
 );
 
-  // Case-style leading one detector
-  function automatic [MAG_WIDTH-1:0] leading_one(input logic signed [DATA_WIDTH-1:0] val); // 함수: MSB 1의 위치 찾기
-    logic [DATA_WIDTH-1:0] abs_val;
-    abs_val = val[DATA_WIDTH-1] ? -val : val; 
-    // 23비트 입력을 절대값으로 변환 : signed 숫자의 MSB가 1(부호비트 1)이면 음수이므로 부호변환
-
-    // critical path 우려되므로 casez 사용
-    casez (abs_val)
-      23'b1??????????????????????: return 22;  // MSB가 1인 위치가 22번째, 나머지 don't care
-      23'b01?????????????????????: return 21;
-      23'b001????????????????????: return 20;
-      23'b0001???????????????????: return 19;
-      23'b00001??????????????????: return 18;
-      23'b000001?????????????????: return 17;
-      23'b0000001????????????????: return 16;
-      23'b00000001???????????????: return 15;
-      23'b000000001??????????????: return 14;
-      23'b0000000001?????????????: return 13;
-      23'b00000000001????????????: return 12;
-      23'b000000000001???????????: return 11;
-      23'b0000000000001??????????: return 10;
-      23'b00000000000001?????????: return 9;
-      23'b000000000000001????????: return 8;
-      23'b0000000000000001???????: return 7;
-      23'b00000000000000001??????: return 6;
-      23'b000000000000000001?????: return 5;
-      23'b0000000000000000001????: return 4;
-      23'b00000000000000000001???: return 3;
-      23'b000000000000000000001??: return 2;
-      23'b0000000000000000000001?: return 1;
-      23'b00000000000000000000001: return 0;
-      default: return 0;
-    endcase
-  endfunction
-
-  // 16개의 입력에 대해 병렬 처리
   genvar i;
-  generate // 하드웨어 반복 구조 자동 생성
-    for (i = 0; i < 16; i++) begin : MAG_DET // 1clk 16개 입력에 대해 클럭당 16개씩 detect 처리
+  generate
+    for (i = 0; i < 16; i++) begin : MSB_COUNT
+      logic [DATA_WIDTH-2:0] val; // 부호 비트 제외한 22비트
+      logic sign;
+
       always_comb begin
-        mag_out[i] = leading_one(din[i]);
+        val  = din[i][DATA_WIDTH-2:0];
+        sign = din[i][DATA_WIDTH-1];
+
+        mag_out[i] =
+          // 양수 (leading-zero count)
+          (!sign && (val[21: 0] == 22'h000000)) ? 5'd22 :
+          (!sign && (val[21: 1] == 21'h000000)) ? 5'd21 :
+          (!sign && (val[21: 2] == 20'h00000 )) ? 5'd20 :
+          (!sign && (val[21: 3] == 19'h0000  )) ? 5'd19 :
+          (!sign && (val[21: 4] == 18'h0000  )) ? 5'd18 :
+          (!sign && (val[21: 5] == 17'h0000  )) ? 5'd17 :
+          (!sign && (val[21: 6] == 16'h0000  )) ? 5'd16 :
+          (!sign && (val[21: 7] == 15'h0000  )) ? 5'd15 :
+          (!sign && (val[21: 8] == 14'h0000  )) ? 5'd14 :
+          (!sign && (val[21: 9] == 13'h0000  )) ? 5'd13 :
+          (!sign && (val[21:10] == 12'h000   )) ? 5'd12 :
+          (!sign && (val[21:11] == 11'h000   )) ? 5'd11 :
+          (!sign && (val[21:12] == 10'h000   )) ? 5'd10 :
+          (!sign && (val[21:13] ==  9'h000   )) ? 5'd9  :
+          (!sign && (val[21:14] ==  8'h00    )) ? 5'd8  :
+          (!sign && (val[21:15] ==  7'h00    )) ? 5'd7  :
+          (!sign && (val[21:16] ==  6'h00    )) ? 5'd6  :
+          (!sign && (val[21:17] ==  5'h00    )) ? 5'd5  :
+          (!sign && (val[21:18] ==  4'h0     )) ? 5'd4  :
+          (!sign && (val[21:19] ==  3'h0     )) ? 5'd3  :
+          (!sign && (val[21:20] ==  2'h0     )) ? 5'd2  :
+          (!sign && (val[21:21] ==  1'h0     )) ? 5'd1  :
+
+          // 음수 (leading-one count)
+          (sign && (val[21: 0] == 22'h3FFFFF)) ? 5'd22 :
+          (sign && (val[21: 1] == 21'h1FFFFF)) ? 5'd21 :
+          (sign && (val[21: 2] == 20'hFFFFF )) ? 5'd20 :
+          (sign && (val[21: 3] == 19'h7FFFF )) ? 5'd19 :
+          (sign && (val[21: 4] == 18'h3FFFF )) ? 5'd18 :
+          (sign && (val[21: 5] == 17'h1FFFF )) ? 5'd17 :
+          (sign && (val[21: 6] == 16'h0FFFF )) ? 5'd16 :
+          (sign && (val[21: 7] == 15'h07FFF )) ? 5'd15 :
+          (sign && (val[21: 8] == 14'h03FFF )) ? 5'd14 :
+          (sign && (val[21: 9] == 13'h01FFF )) ? 5'd13 :
+          (sign && (val[21:10] == 12'h00FFF )) ? 5'd12 :
+          (sign && (val[21:11] == 11'h007FF )) ? 5'd11 :
+          (sign && (val[21:12] == 10'h003FF )) ? 5'd10 :
+          (sign && (val[21:13] ==  9'h001FF )) ? 5'd9  :
+          (sign && (val[21:14] ==  8'h000FF )) ? 5'd8  :
+          (sign && (val[21:15] ==  7'h0007F )) ? 5'd7  :
+          (sign && (val[21:16] ==  6'h0003F )) ? 5'd6  :
+          (sign && (val[21:17] ==  5'h0001F )) ? 5'd5  :
+          (sign && (val[21:18] ==  4'h000F  )) ? 5'd4  :
+          (sign && (val[21:19] ==  3'h0007  )) ? 5'd3  :
+          (sign && (val[21:20] ==  2'h0003  )) ? 5'd2  :
+          (sign && (val[21:21] ==  1'h0001  )) ? 5'd1  :
+
+          5'd0; // fallback
       end
     end
   endgenerate
