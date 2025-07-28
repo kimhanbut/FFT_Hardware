@@ -2,7 +2,7 @@
 
 module cbfp_module0 #(
   parameter IN_WIDTH    = 23,
-  parameter OUT_WIDTH   = 13,
+  parameter OUT_WIDTH   = 11,
   parameter SHIFT_WIDTH = 5,  // to represent 0~31
   parameter MAG_WIDTH   = SHIFT_WIDTH
 )(
