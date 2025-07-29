@@ -26,4 +26,4 @@
 - cbfp design complete, merge with former module
 - step0~step2 merge complete(timing problem is not yet solved)
 - step1_0 design(verification error detected)
-- *necessray verification* -> module0 top(with golden)
+- **necessray verification** -> module0 top(with golden)
