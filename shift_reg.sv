@@ -16,8 +16,8 @@ module shift_reg #(
 );
 
     // FIFO 버퍼
-    logic signed [DATA_WIDTH-1:0] shift_i [0:SIZE-1][0:IN_SIZE-1];
-    logic signed [DATA_WIDTH-1:0] shift_q [0:SIZE-1][0:IN_SIZE-1];
+    logic [DATA_WIDTH-1:0] shift_i [0:SIZE-1][0:IN_SIZE-1];
+    logic [DATA_WIDTH-1:0] shift_q [0:SIZE-1][0:IN_SIZE-1];
 
     logic [$clog2(SIZE+1)-1:0] count;
     logic bufly_en_reg;
@@ -34,7 +34,7 @@ module shift_reg #(
             end
         end else begin
       bufly_en_reg <= 0;
-      count <= 0; //이후 모듈에서 두번 shift 동작하는 과정에 필요함. 새로 count 해야 돼서
+      count <= 0;
 
             if (din_valid) begin
                 // FIFO shift: 앞으로 당기기
@@ -52,8 +52,8 @@ module shift_reg #(
                 end
 
                 // 카운트 증가
-                count <= count + 1;
-      		if(count>=SIZE && count<=(SIZE*2))
+		count <= count + 1;
+		if(count>=SIZE-1 && count<=(SIZE*2))
          		bufly_en_reg <= 1;
 
             end
