@@ -21,31 +21,7 @@ module bf0_parallel #(
     output logic signed [OUT_DATA_W-1:0] output_sub_imag[0:UNIT_SIZE-1]
 );
 
-    // ========================
-    // 1. 입력 레지스터 선언
-    // ========================
-    logic signed [IN_DATA_W-1:0] sr_real_reg [0:UNIT_SIZE-1];
-    logic signed [IN_DATA_W-1:0] sr_imag_reg [0:UNIT_SIZE-1];
-    logic signed [IN_DATA_W-1:0] org_real_reg[0:UNIT_SIZE-1];
-    logic signed [IN_DATA_W-1:0] org_imag_reg[0:UNIT_SIZE-1];
-    logic                        valid_reg;
 
-    // ========================
-    // 2. 입력 래치 (1클럭 지연)
-    // ========================
-    always_ff @(posedge clk or negedge rstn) begin
-        if (!rstn) begin
-            valid_reg <= 0;
-        end else begin
-            valid_reg <= valid_in;
-            for (int i = 0; i < CLK_CNT; i++) begin
-                sr_real_reg[i]  <= input_sr_real[i];
-                sr_imag_reg[i]  <= input_sr_imag[i];
-                org_real_reg[i] <= input_org_real[i];
-                org_imag_reg[i] <= input_org_imag[i];
-            end
-        end
-    end
 
     // ========================
     // 3. clk 카운터
@@ -53,11 +29,12 @@ module bf0_parallel #(
     logic [3:0] clk_cnt;
     always_ff @(posedge clk or negedge rstn) begin
         if (!rstn) clk_cnt <= 0;
-        else if (valid_reg && clk_cnt < CLK_CNT) clk_cnt <= clk_cnt + 1;
+        else if (valid_in && clk_cnt < CLK_CNT) clk_cnt <= clk_cnt + 1;
     end
 
-    assign valid_out = (valid_reg && clk_cnt < CLK_CNT);
+    assign valid_out = (valid_in && clk_cnt < CLK_CNT);
     wire apply_minus_j = (clk_cnt >= (CLK_CNT/2));
+
 
     // ========================
     // 4. 연산 (지연된 입력 기준)
@@ -67,10 +44,10 @@ module bf0_parallel #(
 
     always_comb begin
         for (int i = 0; i < CLK_CNT; i++) begin
-            add_real[i] = sr_real_reg[i] + org_real_reg[i];
-            add_imag[i] = sr_imag_reg[i] + org_imag_reg[i];
-            sub_real[i] = sr_real_reg[i] - org_real_reg[i];
-            sub_imag[i] = sr_imag_reg[i] - org_imag_reg[i];
+            add_real[i] = input_sr_real[i] + input_org_real[i];
+            add_imag[i] = input_sr_imag[i] + input_org_imag[i];
+            sub_real[i] = input_sr_real[i] - input_org_real[i];
+            sub_imag[i] = input_sr_imag[i] - input_org_imag[i];
         end
     end
 
@@ -85,7 +62,7 @@ module bf0_parallel #(
                 output_sub_real[i] <= 0;
                 output_sub_imag[i] <= 0;
             end
-        end else if (valid_reg) begin
+        end else if (valid_in) begin
             for (int i = 0; i < CLK_CNT; i++) begin
                 output_add_real[i] <= add_real[i];
                 output_add_imag[i] <= add_imag[i];
