@@ -46,7 +46,8 @@ end
 assign valid_out = valid_in_d;
 
 // 후반부 clk_cnt에서 -j 곱셈 적용
-logic apply_minus_j = (clk_cnt >= (CLK_CNT/2));
+logic apply_minus_j;
+assign apply_minus_j = (clk_cnt >= (CLK_CNT/2));
 
 logic signed [OUT_DATA_W-1:0] add_real[0:UNIT_SIZE-1], add_imag[0:UNIT_SIZE-1];
 logic signed [OUT_DATA_W-1:0] sub_real[0:UNIT_SIZE-1], sub_imag[0:UNIT_SIZE-1];
