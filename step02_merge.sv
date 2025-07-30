@@ -1,4 +1,3 @@
-//step0_2 merge
 `timescale 1ns/1ps
 
 module step0_2(
@@ -36,10 +35,10 @@ logic signed [12:0] bf02_din_add_q[0:15];
 logic signed [12:0] bf02_din_sub_i[0:15];
 logic signed [12:0] bf02_din_sub_q[0:15];
 
-logic signed [22:0] bf02_dout_add_i[0:15];
-logic signed [22:0] bf02_dout_add_q[0:15];
-logic signed [22:0] bf02_dout_sub_i[0:15];
-logic signed [22:0] bf02_dout_sub_q[0:15];
+//logic signed [22:0] bf02_dout_add_i[0:15];
+//logic signed [22:0] bf02_dout_add_q[0:15];
+//logic signed [22:0] bf02_dout_sub_i[0:15];
+//logic signed [22:0] bf02_dout_sub_q[0:15];
 
 //muxed input
 
@@ -66,6 +65,8 @@ logic delayed_bf00_val;
 // 2clk delayed bf01_val
 logic delayed_bf01_val;
 
+logic bf00_sr_valid;
+logic bf01_sr_valid;
 
 // input 256 size Shift Register
 shift_reg #(
@@ -75,7 +76,7 @@ shift_reg #(
     ) SR_IN_256 (
         .clk(clk),
         .rstn(rstn),
-        .din_valid(din_valid),
+	.din_valid(din_valid),
         .din_i(din_i),
         .din_q(din_q),
         .dout_i(shifted_bf00_input_i),
@@ -92,7 +93,7 @@ shift_reg #(
     ) SR_01_256 (
         .clk(clk),
         .rstn(rstn),
-        .din_valid(),
+	.din_valid(bf00_sr_valid),
         .din_i(bf00_dout_sub_i),
         .din_q(bf00_dout_sub_q),
         .dout_i(muxed_sr_256_output_i),
@@ -108,7 +109,7 @@ shift_reg #(
     ) SR_01_128 (
         .clk(clk),
         .rstn(rstn),
-        .din_valid(),
+	.din_valid(bf00_sr_valid),
         .din_i(muxed_sr_128_input_i),
         .din_q(muxed_sr_128_input_q),
         .dout_i(bf01_din_add_i),
@@ -124,7 +125,7 @@ shift_reg #(
     ) SR_12_128 (
         .clk(clk),
         .rstn(rstn),
-        .din_valid(),
+	.din_valid(bf01_sr_valid),
         .din_i(bf01_dout_sub_i),
         .din_q(bf01_dout_sub_q),
         .dout_i(muxed_sr_128_output_i),
@@ -140,7 +141,7 @@ shift_reg #(
     ) SR_12_64 (
         .clk(clk),
         .rstn(rstn),
-        .din_valid(),
+	.din_valid(bf01_sr_valid),
         .din_i(muxed_sr_64_input_i),
         .din_q(muxed_sr_64_input_q),
         .dout_i(bf02_din_add_i),
@@ -152,23 +153,24 @@ shift_reg #(
 butterfly00 BF_00 (
         .clk(clk),
         .rstn(rstn),
-        .valid_in(BF00_val),
-        .input_real_a(shifted_bf00_input_i),
-        .input_imag_a(shifted_bf00_input_q),
-        .input_real_b(din_i),
-        .input_imag_b(din_q),
+        .valid_in(bf00_val),
+        .input_sr_real(shifted_bf00_input_i),
+        .input_sr_imag(shifted_bf00_input_q),
+        .input_org_real(din_i),
+        .input_org_imag(din_q),
         .valid_out(delayed_bf00_val),
-        .output_real_add(bf00_dout_add_i),
-        .output_imag_add(bf00_dout_add_q),
-        .output_real_diff(bf00_dout_sub_i),
-        .output_imag_diff(bf00_dout_sub_q)
+        .output_add_real(bf00_dout_add_i),
+        .output_add_imag(bf00_dout_add_q),
+        .output_sub_real(bf00_dout_sub_i),
+        .output_sub_imag(bf00_dout_sub_q),
+	.SR_valid(bf00_sr_valid)
 );
 
 // Butterfly01
 butterfly01 BF_01 (
         .clk(clk),
         .rstn(rstn),
-        .valid_in(BF01_val),
+        .valid_in(bf01_val),
         .input_real_a(bf01_din_add_i),
         .input_imag_a(bf01_din_add_q),
         .input_real_b(bf01_din_sub_i),
@@ -177,7 +179,8 @@ butterfly01 BF_01 (
         .output_real_add(bf01_dout_add_i),
         .output_imag_add(bf01_dout_add_q),
         .output_real_diff(bf01_dout_sub_i),
-        .output_imag_diff(bf01_dout_sub_q)
+        .output_imag_diff(bf01_dout_sub_q),
+	.SR_valid(bf01_sr_valid)
 );
 
 // Butterfly02
@@ -190,10 +193,10 @@ butterfly02 BF_02 (
         .input_real_b(bf02_din_sub_i),
         .input_imag_b(bf02_din_sub_q),
         .valid_out(),
-        .output_real_add(bf02_dout_add_i),
-        .output_imag_add(bf02_dout_add_q),
-        .output_real_diff(bf02_dout_sub_i),
-        .output_imag_diff(bf02_dout_sub_q)
+        .output_real_add(dout_add_r),
+        .output_imag_add(dout_add_i),
+        .output_real_diff(dout_sub_r),
+        .output_imag_diff(dout_sub_i)
 );
 
 
