@@ -54,7 +54,8 @@ module butterfly10 #(
         else if (valid_in && clk_cnt < CLK_CNT) clk_cnt <= clk_cnt + 1;
     end
 
-    wire apply_minus_j = (clk_cnt >= (CLK_CNT/2));
+    logic apply_minus_j;
+    assign apply_minus_j = (clk_cnt >= (CLK_CNT/2));
 
     // === Output register and fac8_0 multiply ===
     always_ff @(posedge clk or negedge rstn) begin
