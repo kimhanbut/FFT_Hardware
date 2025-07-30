@@ -40,8 +40,8 @@ logic signed [9:0] tw_diff_imag[0:3] = '{0, -256, 0, -181};
 logic signed [10:0] sum_real_reg  [0:15], sum_imag_reg  [0:15];
 logic signed [10:0] diff_real_reg [0:15], diff_imag_reg [0:15];
 
-logic signed [20:0] mult_add0 [0:15], mult_add1 [0:15];
-logic signed [20:0] mult_diff0 [0:15], mult_diff1 [0:15];
+logic signed [20:0] mult_add_i [0:15], mult_add_q [0:15];
+logic signed [20:0] mult_diff_i [0:15], mult_diff_q [0:15];
 
 logic signed [12:0] rd_add_real [0:15], rd_add_imag [0:15];
 logic signed [12:0] rd_diff_real[0:15], rd_diff_imag[0:15];
@@ -72,17 +72,20 @@ end
 always_comb begin
     tw_idx = tw_cnt[3:2];
     for (int i = 0; i < 16; i++) begin
-        mult_add0[i]  = sum_real_reg[i]  * tw_add_real[tw_idx];
-        mult_add1[i]  = sum_imag_reg[i]  * tw_add_imag[tw_idx];
-        mult_diff0[i] = diff_real_reg[i] * tw_diff_real[tw_idx];
-        mult_diff1[i] = diff_imag_reg[i] * tw_diff_imag[tw_idx];
+        mult_add_i[i]  = (sum_real_reg[i]  * tw_add_real[tw_idx])-(sum_imag_reg[i]  * tw_add_imag[tw_idx]);
+        mult_add_q[i]  = (sum_imag_reg[i]  * tw_add_real[tw_idx])+(sum_real_reg[i]  * tw_add_imag[tw_idx]);
+        mult_diff_i[i] = (diff_real_reg[i] * tw_diff_real[tw_idx])-(diff_imag_reg[i]  * tw_diff_imag[tw_idx]);
+	mult_diff_q[i] = (diff_imag_reg[i] * tw_diff_real[tw_idx])+(diff_real_reg[i] * tw_diff_imag[tw_idx]);
 
-        rd_add_real[i]  = mult_add0[i]  >>> 8;
-        rd_add_imag[i]  = mult_add1[i]  >>> 8;
-        rd_diff_real[i] = mult_diff0[i] >>> 8;
-        rd_diff_imag[i] = mult_diff1[i] >>> 8;
+        rd_add_real[i]  = mult_add_i[i]  >>> 8;
+        rd_add_imag[i]  = mult_add_q[i]  >>> 8;
+        rd_diff_real[i] = mult_diff_i[i] >>> 8;
+        rd_diff_imag[i] = mult_diff_q[i] >>> 8;
     end
 end
+
+
+
 
 // 출력과 valid 제어
 always_ff @(posedge clk or negedge rstn) begin
