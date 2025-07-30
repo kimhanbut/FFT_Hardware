@@ -202,16 +202,15 @@ butterfly02 BF_02 (
 
 always_comb begin
     for (int i = 0; i < 16; i++) begin
+	muxed_sr_128_input_i[i] = (delayed_bf00_val) ? bf00_dout_add_i[i] : muxed_sr_256_output_i[i];
+        muxed_sr_128_input_q[i] = (delayed_bf00_val) ? bf00_dout_add_q[i] : muxed_sr_256_output_q[i];
+        muxed_sr_64_input_i[i] = (delayed_bf01_val) ? bf01_dout_add_i[i] : muxed_sr_128_output_i[i];
+        muxed_sr_64_input_q[i] = (delayed_bf01_val) ? bf01_dout_add_q[i] : muxed_sr_128_output_q[i];
+	    
         bf01_din_sub_i[i] = (delayed_bf00_val) ? muxed_sr_128_input_i[i] : muxed_sr_256_output_i[i];
         bf01_din_sub_q[i] = (delayed_bf00_val) ? muxed_sr_128_input_q[i] : muxed_sr_256_output_q[i];
         bf02_din_sub_i[i] = (delayed_bf01_val) ? muxed_sr_64_input_i[i] : muxed_sr_128_output_i[i];
         bf02_din_sub_q[i] = (delayed_bf01_val) ? muxed_sr_64_input_q[i] : muxed_sr_128_output_q[i];
-
-        muxed_sr_128_input_i[i] = (delayed_bf00_val) ? bf00_dout_add_i[i] : muxed_sr_256_output_i[i];
-        muxed_sr_128_input_q[i] = (delayed_bf00_val) ? bf00_dout_add_q[i] : muxed_sr_256_output_q[i];
-        muxed_sr_64_input_i[i] = (delayed_bf01_val) ? bf01_dout_add_i[i] : muxed_sr_128_output_i[i];
-        muxed_sr_64_input_q[i] = (delayed_bf01_val) ? bf01_dout_add_q[i] : muxed_sr_128_output_q[i];
-        
     end
 end
 
