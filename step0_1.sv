@@ -111,3 +111,34 @@ end
         else if (din_valid | local_valid)
             clk_cnt <= clk_cnt + 1;
         else
+            clk_cnt <= clk_cnt;
+    end
+
+    // Sequential control to avoid latch
+    always_ff @(posedge clk or negedge rstn) begin
+        if (!rstn) begin
+            sr8_din_i   <= '{default:0};
+            sr8_din_q   <= '{default:0};
+            bf_in_i     <= '{default:0};
+            bf_in_q     <= '{default:0};
+        end else begin
+            if (clk_cnt < 16) begin
+                sr8_din_i <= din_add_r;
+                sr8_din_q <= din_add_i;
+                bf_in_i   <= din_add_r;
+                bf_in_q   <= din_add_i;
+            end else if (clk_cnt >= 16) begin
+                sr8_din_i <= sr16_dout_i;
+                sr8_din_q <= sr16_dout_q;
+                bf_in_i   <= sr16_dout_i;
+                bf_in_q   <= sr16_dout_q;
+            end else begin
+                sr8_din_i <= '{default:0};
+                sr8_din_q <= '{default:0};
+                bf_in_i   <= '{default:0};
+                bf_in_q   <= '{default:0};
+            end
+        end
+    end
+
+endmodule
