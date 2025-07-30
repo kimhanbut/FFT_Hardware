@@ -58,7 +58,7 @@ always_ff @(posedge clk or negedge rstn) begin
             diff_real_reg[i] <= 0;
             diff_imag_reg[i] <= 0;
         end
-    end else if (valid_in) begin
+    end else if (valid_in | valid_in_d1) begin
         for (int i = 0; i < 16; i++) begin
             sum_real_reg[i]  <= input_real_a[i] + input_real_b[i];
             sum_imag_reg[i]  <= input_imag_a[i] + input_imag_b[i];
@@ -75,16 +75,14 @@ always_comb begin
         mult_add_i[i]  = (sum_real_reg[i]  * tw_add_real[tw_idx])-(sum_imag_reg[i]  * tw_add_imag[tw_idx]);
         mult_add_q[i]  = (sum_imag_reg[i]  * tw_add_real[tw_idx])+(sum_real_reg[i]  * tw_add_imag[tw_idx]);
         mult_diff_i[i] = (diff_real_reg[i] * tw_diff_real[tw_idx])-(diff_imag_reg[i]  * tw_diff_imag[tw_idx]);
-	mult_diff_q[i] = (diff_imag_reg[i] * tw_diff_real[tw_idx])+(diff_real_reg[i] * tw_diff_imag[tw_idx]);
+        mult_diff_q[i] = (diff_imag_reg[i] * tw_diff_real[tw_idx])+(diff_real_reg[i] * tw_diff_imag[tw_idx]);
 
-        rd_add_real[i]  = mult_add_i[i]  >>> 8;
-        rd_add_imag[i]  = mult_add_q[i]  >>> 8;
-        rd_diff_real[i] = mult_diff_i[i] >>> 8;
-        rd_diff_imag[i] = mult_diff_q[i] >>> 8;
+	rd_add_real[i]  = (mult_add_i[i]  + 128) >>> 8;
+        rd_add_imag[i]  = (mult_add_q[i]  + 128) >>> 8;
+        rd_diff_real[i] = (mult_diff_i[i] + 128) >>> 8;
+        rd_diff_imag[i] = (mult_diff_q[i] + 128) >>> 8;
     end
 end
-
-
 
 
 // 출력과 valid 제어
@@ -101,7 +99,7 @@ always_ff @(posedge clk or negedge rstn) begin
         end
     end else begin
         valid_in_d1 <= valid_in;
-        if (valid_in) begin
+        if (valid_in_d1) begin
             for (int i = 0; i < 16; i++) begin
                 output_real_add[i]  <= rd_add_real[i];
                 output_imag_add[i]  <= rd_add_imag[i];
