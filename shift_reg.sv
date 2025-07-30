@@ -53,7 +53,7 @@ module shift_reg #(
 
                 // 카운트 증가
 		count <= count + 1;
-		if(count>=SIZE-1 && count<=(SIZE*2))
+		if(count>=SIZE-1 && count<(SIZE*2)-1)
          		bufly_en_reg <= 1;
 
             end
