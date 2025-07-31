@@ -40,12 +40,13 @@ module step1_1 (
             local_valid <= 0;
             bfly_ctrl_delay <= 0;
         end else begin
-            if (din_valid && valid_cnt == 0)
+            if (din_valid && valid_cnt == 0) begin
                 valid_cnt <= 32;
-            else if (valid_cnt > 0)
+            end else if (valid_cnt > 0) begin
                 valid_cnt <= valid_cnt - 1;
-                local_valid <= (valid_cnt > 0);
-                bfly_ctrl_delay <= bfly_ctrl;
+            end
+            local_valid <= (valid_cnt > 0);
+            bfly_ctrl_delay <= bfly_ctrl;
         end
     end
 
@@ -62,7 +63,7 @@ module step1_1 (
         .din_q(sr1_din_q),
         .dout_i(sr1_dout_i),
         .dout_q(sr1_dout_q),
-        .bufly_enable(bufly_ctrl)
+        .bufly_enable(bfly_ctrl)
     );
 
     // 16-point Shift Register
@@ -85,7 +86,7 @@ module step1_1 (
     butterfly11 BF_11 (
         .clk(clk),
         .rstn(rstn),
-        .valid_in(bufly_ctrl_delay),
+        .valid_in(bfly_ctrl_delay),
         .input_real_a(sr1_dout_i),
         .input_imag_a(sr1_dout_q),
         .input_real_b(bf_in_i),
