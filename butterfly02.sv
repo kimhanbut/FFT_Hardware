@@ -1,3 +1,4 @@
+
 `timescale 1ns / 1ps
 
 module butterfly02 (
@@ -41,8 +42,6 @@ module butterfly02 (
     // Twiddle outputs (from ROM) and 1clk-delayed versions
     logic [8:0] twf_add_re[0:15], twf_add_im[0:15];
     logic [8:0] twf_sub_re[0:15], twf_sub_im[0:15];
-    logic [8:0] twf_re_add_dly[0:15], twf_im_add_dly[0:15];
-    logic [8:0] twf_re_sub_dly[0:15], twf_im_sub_dly[0:15];
 
     logic [8:0] rom1_addr, rom2_addr;
 
@@ -69,36 +68,19 @@ module butterfly02 (
  twiddle_address_generator ROM_ADDR(
     .clk(clk),
     .rstn(rstn),
-    .valid_in(valid_in),
+    .valid_in(valid_in_dly),
     .rom1_addr(rom1_addr),
     .rom2_addr(rom2_addr)
 );
 
-    // Delay Twiddle ROM outputs by 1 clk
-    always_ff @(posedge clk or negedge rstn) begin
-        if (!rstn) begin
-            for (int i = 0; i < 16; i++) begin
-                twf_re_add_dly[i] <= 0;
-                twf_im_add_dly[i] <= 0;
-                twf_re_sub_dly[i] <= 0;
-                twf_im_sub_dly[i] <= 0;
-            end
-        end else begin
-            for (int i = 0; i < 16; i++) begin
-                twf_re_add_dly[i] <= twf_add_re[i];
-                twf_im_add_dly[i] <= twf_add_im[i];
-                twf_re_sub_dly[i] <= twf_sub_re[i];
-                twf_im_sub_dly[i] <= twf_sub_im[i];
-            end
-        end
-    end
+
 
     // Twiddle multiplication units
     twiddle_mul MULT1 (
         .data_re_in (sum_real_reg1),
         .data_im_in (sum_imag_reg1),
-        .twf_re_in  (twf_re_add_dly),
-        .twf_im_in  (twf_im_add_dly),
+        .twf_re_in  (twf_add_re),
+        .twf_im_in  (twf_add_im),
         .data_re_out(mult_add0),
         .data_im_out(mult_add1)
     );
@@ -106,8 +88,8 @@ module butterfly02 (
     twiddle_mul MULT2 (
         .data_re_in (diff_real_reg1),
         .data_im_in (diff_imag_reg1),
-        .twf_re_in  (twf_re_sub_dly),
-        .twf_im_in  (twf_im_sub_dly),
+        .twf_re_in  (twf_sub_re),
+        .twf_im_in  (twf_sub_im),
         .data_re_out(mult_diff0),
         .data_im_out(mult_diff1)
     );
@@ -128,13 +110,24 @@ module butterfly02 (
 
     // Combinational butterfly add/sub
     always_comb begin
-        for (int i = 0; i < 16; i++) begin
-            sum_real[i]  = input_real_a[i] + input_real_b[i];
-            sum_imag[i]  = input_imag_a[i] + input_imag_b[i];
-            diff_real[i] = input_real_a[i] - input_real_b[i];
-            diff_imag[i] = input_imag_a[i] - input_imag_b[i];
-        end
+        if (valid_in) begin
+            for (int i = 0; i < 16; i++) begin
+                sum_real[i]  = input_real_a[i] + input_real_b[i];
+                sum_imag[i]  = input_imag_a[i] + input_imag_b[i];
+                diff_real[i] = input_real_a[i] - input_real_b[i];
+                diff_imag[i] = input_imag_a[i] - input_imag_b[i];
+            end
+        end else begin
+            for (int i = 0; i < 16; i++) begin
+                sum_real[i]  = 0;
+                sum_imag[i]  = 0;
+                diff_real[i] = 0;
+                diff_imag[i] = 0;
+            end
+	end
     end
+
+
 
     // Register butterfly results (1clk)
     always_ff @(posedge clk or negedge rstn) begin
@@ -149,7 +142,7 @@ module butterfly02 (
                 diff_real_reg1[i] <= 0;
                 diff_imag_reg1[i] <= 0;
             end
-        end else if (valid_in) begin
+        end else begin
             for (int i = 0; i < 16; i++) begin
                 sum_real_reg[i]  <= sum_real[i];
                 sum_imag_reg[i]  <= sum_imag[i];
@@ -159,6 +152,7 @@ module butterfly02 (
                 sum_imag_reg1[i]  <= sum_imag_reg[i];
                 diff_real_reg1[i] <= diff_real_reg[i];
                 diff_imag_reg1[i] <= diff_imag_reg[i];
+
             end
         end
     end
@@ -231,4 +225,3 @@ assign rom2_addr = rom2_add;
 
 
 endmodule
-
