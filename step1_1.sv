@@ -86,7 +86,7 @@ module step1_1 (
     butterfly11 BF_11 (
         .clk(clk),
         .rstn(rstn),
-        .valid_in(bfly_ctrl_delay),
+        .valid_in(local_valid),
         .input_real_a(sr1_dout_i),
         .input_imag_a(sr1_dout_q),
         .input_real_b(bf_in_i),
