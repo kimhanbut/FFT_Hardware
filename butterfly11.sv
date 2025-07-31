@@ -69,10 +69,10 @@ module butterfly11 (
         tw_idx = tw_cnt[3:1]; // 64포인트마다 8패턴, 상위 3bit 추출
         for (int i = 0; i < 16; i++) begin
             // (Re + jIm) × (fac_real + j fac_imag)
-            mul_add_r[i]  = sum_r[i]  * fac_real[tw_idx] - sum_i[i]  * fac_imag[tw_idx];
-            mul_add_i[i]  = sum_i[i]  * fac_real[tw_idx] + sum_r[i]  * fac_imag[tw_idx];
-            mul_sub_r[i]  = diff_r[i] * fac_real[tw_idx] - diff_i[i] * fac_imag[tw_idx];
-            mul_sub_i[i]  = diff_i[i] * fac_real[tw_idx] + diff_r[i] * fac_imag[tw_idx];
+            mul_add_r[i]  = (sum_r[i]  * fac_real[tw_idx]) - (sum_i[i]  * fac_imag[tw_idx]);
+            mul_add_i[i]  = (sum_i[i]  * fac_real[tw_idx]) + (sum_r[i]  * fac_imag[tw_idx]);
+            mul_sub_r[i]  = (diff_r[i] * fac_real[tw_idx]) - (diff_i[i] * fac_imag[tw_idx]);
+            mul_sub_i[i]  = (diff_i[i] * fac_real[tw_idx]) + (diff_r[i] * fac_imag[tw_idx]);
 
             rd_add_r[i] = (mul_add_r[i] + 128) >>> 8;
             rd_add_i[i] = (mul_add_i[i] + 128) >>> 8;
@@ -87,7 +87,7 @@ module butterfly11 (
             valid_in_d1 <= 0;
             valid_out   <= 0;
             tw_cnt      <= 0;
-            foreach (output_real_add[i]) begin
+            for (int i = 0; i < 16; i++) begin
                 output_real_add[i]  <= 0;
                 output_imag_add[i]  <= 0;
                 output_real_diff[i] <= 0;
