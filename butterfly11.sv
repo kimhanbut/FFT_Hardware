@@ -24,7 +24,7 @@ module butterfly11 (
         if (!rstn)
             sr_valid_cnt <= 0;
         else if (valid_in_d1)
-            sr_valid_cnt <= 6'd9;  // 
+            sr_valid_cnt <= 6'd9;  
         else if (sr_valid_cnt != 0)
             sr_valid_cnt <= sr_valid_cnt - 1;
     end
@@ -49,8 +49,10 @@ module butterfly11 (
     always_ff @(posedge clk or negedge rstn) begin
         if (!rstn) begin
             for (int i = 0; i < 16; i++) begin
-                sum_r[i]  <= 0; sum_i[i]  <= 0;
-                diff_r[i] <= 0; diff_i[i] <= 0;
+                sum_r[i]  <= 0; 
+                sum_i[i]  <= 0;
+                diff_r[i] <= 0; 
+                diff_i[i] <= 0;           
             end
         end else if (valid_in | valid_in_d1) begin
             for (int i = 0; i < 16; i++) begin
