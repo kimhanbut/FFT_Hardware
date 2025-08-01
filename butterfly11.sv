@@ -8,10 +8,8 @@ module butterfly11 (
     input  logic signed [11:0] input_imag_b [0:15],
 
     output logic         valid_out,
-    output logic signed [14:0] output_real_add  [0:15],
-    output logic signed [14:0] output_imag_add  [0:15],
-    output logic signed [14:0] output_real_diff [0:15],
-    output logic signed [14:0] output_imag_diff [0:15],
+    output logic signed [13:0] output_real  [0:15],
+    output logic signed [13:0] output_imag  [0:15],
     output logic SR_valid
 );
 
@@ -39,8 +37,8 @@ module butterfly11 (
     logic signed [22:0] mul_add_r [0:15], mul_add_i [0:15];
     logic signed [22:0] mul_sub_r [0:15], mul_sub_i [0:15];
 
-    logic signed [14:0] rd_add_r [0:15], rd_add_i [0:15];
-    logic signed [14:0] rd_sub_r [0:15], rd_sub_i [0:15];
+    logic signed [13:0] rd_add_r [0:15], rd_add_i [0:15];
+    logic signed [13:0] rd_sub_r [0:15], rd_sub_i [0:15];
 
     logic [3:0] tw_cnt; // fac8_1 계수 적용위한 인덱스를 cnt : 0~15
     logic [2:0] tw_idx; // fac8_1 계수 인덱스 : 0~7
@@ -88,20 +86,16 @@ module butterfly11 (
             valid_out   <= 0;
             tw_cnt      <= 0;
             for (int i = 0; i < 16; i++) begin
-                output_real_add[i]  <= 0;
-                output_imag_add[i]  <= 0;
-                output_real_diff[i] <= 0;
-                output_imag_diff[i] <= 0;
+                output_real[i]  <= 0;
+                output_imag[i]  <= 0;
             end
         end else begin
             valid_in_d1 <= valid_in;
             if (valid_in_d1) begin
                 tw_cnt <= tw_cnt + 1;
                 for (int i = 0; i < 16; i++) begin
-                    output_real_add[i]  <= rd_add_r[i];
-                    output_imag_add[i]  <= rd_add_i[i];
-                    output_real_diff[i] <= rd_sub_r[i];
-                    output_imag_diff[i] <= rd_sub_i[i];
+                    output_real[i] <= (i < 8) ? rd_add_r[i] : rd_sub_r[i-8];
+                    output_imag[i] <= (i < 8) ? rd_add_i[i] : rd_sub_i[i-8];
                 end
             end
             valid_out <= valid_in_d1;
