@@ -13,7 +13,7 @@ module step1_0 (
     output logic signed [11:0] dout_sub_i[0:15]
 );
 
-    // 앞 32포인트를 저장하는 shift_reg
+    // 앞 32포인트(2clk 값)를 저장하는 shift_reg
     logic signed [10:0] sr_dout_r [0:15];
     logic signed [10:0] sr_dout_i [0:15];
 
