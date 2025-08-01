@@ -9,10 +9,8 @@ module step1_1 (
     input  logic signed [11:0] din_add_i [0:15],
     input  logic signed [11:0] din_sub_i [0:15],
 
-    output logic signed [14:0] dout_add_r[0:15], // 출력 15bit
-    output logic signed [14:0] dout_add_i[0:15],
-    output logic signed [14:0] dout_sub_r[0:15],
-    output logic signed [14:0] dout_sub_i[0:15]
+    output logic signed [13:0] dout_r[0:15],
+    output logic signed [13:0] dout_i[0:15]
 );
 
     logic signed [11:0] sr1_din_i[0:15];
@@ -92,10 +90,8 @@ module step1_1 (
         .input_real_b(bf_in_i),
         .input_imag_b(bf_in_q),
         .valid_out(), // 사용하지 않음
-        .output_real_add(dout_add_r),
-        .output_imag_add(dout_add_i),
-        .output_real_diff(dout_sub_r),
-        .output_imag_diff(dout_sub_i)
+        .output_real(dout_r),
+        .output_imag(dout_i)
     );
 
     // Clock counter
