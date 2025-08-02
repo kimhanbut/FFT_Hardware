@@ -1,3 +1,4 @@
+
 `timescale 1ns / 1ps
 module butterfly00 #(
     parameter IN_DATA_W  = 9,
@@ -21,6 +22,7 @@ module butterfly00 #(
 );
 
 logic [5:0] sr_valid_cnt;
+logic apply_minus_j; 
 
 // SR_valid:다음 SR에 들어가는 din_valid 생성 
 always_ff @(posedge clk or negedge rstn) begin
@@ -46,7 +48,6 @@ end
 assign valid_out = valid_in_d;
 
 // 후반부 clk_cnt에서 -j 곱셈 적용
-logic apply_minus_j;
 assign apply_minus_j = (clk_cnt >= (CLK_CNT/2));
 
 logic signed [OUT_DATA_W-1:0] add_real[0:UNIT_SIZE-1], add_imag[0:UNIT_SIZE-1];
