@@ -107,7 +107,7 @@ always_ff @(posedge clk or negedge rstn) begin
                 output_imag_diff[i] <= rd_diff_imag[i];
             end
         end
-        if (valid_in_d1) begin
+        if ( valid_in_d1) begin
             tw_cnt <= tw_cnt + 4'd1;
         end
         valid_out <= valid_in_d1;
