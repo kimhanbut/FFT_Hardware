@@ -35,7 +35,7 @@ module butterfly02 (
 
     logic [4:0] clk_cnt, clk_cnt_delay;
     logic valid_in_dly, valid_in_dly2;
-    
+
 
 
 
@@ -65,14 +65,13 @@ module butterfly02 (
     );
 
 
- twiddle_address_generator ROM_ADDR(
-    .clk(clk),
-    .rstn(rstn),
-    .valid_in(valid_in_dly),
-    .rom1_addr(rom1_addr),
-    .rom2_addr(rom2_addr)
-);
-
+    twiddle_address_generator ROM_ADDR (
+        .clk(clk),
+        .rstn(rstn),
+        .valid_in(valid_in_dly),
+        .rom1_addr(rom1_addr),
+        .rom2_addr(rom2_addr)
+    );
 
 
     // Twiddle multiplication units
@@ -97,13 +96,13 @@ module butterfly02 (
 
 
     always_ff @(posedge clk or negedge rstn) begin
-        if (!rstn) begin
-            valid_in_dly  <= 0;
-            valid_in_dly2 <= 0;
-        end else begin
-            valid_in_dly  <= valid_in;
-            valid_in_dly2 <= valid_in_dly;
-        end
+            if (!rstn) begin
+                valid_in_dly  <= 0;
+                valid_in_dly2 <= 0;
+            end else begin
+                valid_in_dly  <= valid_in;
+                valid_in_dly2 <= valid_in_dly;
+            end
     end
 
 
@@ -117,16 +116,8 @@ module butterfly02 (
                 diff_real[i] = input_real_a[i] - input_real_b[i];
                 diff_imag[i] = input_imag_a[i] - input_imag_b[i];
             end
-        end else begin
-            for (int i = 0; i < 16; i++) begin
-                sum_real[i]  = 0;
-                sum_imag[i]  = 0;
-                diff_real[i] = 0;
-                diff_imag[i] = 0;
-            end
-	end
+        end
     end
-
 
 
     // Register butterfly results (1clk)
@@ -214,14 +205,14 @@ module twiddle_address_generator (
         end else if (valid_in) begin
             rom1_add <= rom1_add + 16;
             rom2_add <= rom2_add + 16;
-        end else if ((valid_prev & !valid_in) & (valid_in == 0))begin
+        end else if ((valid_prev & !valid_in) & (valid_in == 0)) begin
             rom1_add <= rom1_add + 64;
-            rom2_add <= rom2_add + 64;    
+            rom2_add <= rom2_add + 64;
         end
     end
 
-assign rom1_addr = rom1_add;
-assign rom2_addr = rom2_add;
+    assign rom1_addr = rom1_add;
+    assign rom2_addr = rom2_add;
 
 
 endmodule
