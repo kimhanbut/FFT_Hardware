@@ -32,10 +32,10 @@ module butterfly21 (
 
     // 내부 레지스터 및 곱셈 결과
     logic signed [14:0]
-        sum_r[0:3],
-        sum_i[0:3],
-        diff_r[0:3],
-        diff_i[0:3];
+        sum_r[0:15],
+        sum_i[0:15],
+        diff_r[0:15],
+        diff_i[0:15];
 
     logic signed [13:0] sat_sum_r[0:15], sat_diff_r[0:15];
     logic signed [13:0] sat_sum_i[0:15], sat_diff_i[0:15];
@@ -57,10 +57,6 @@ module butterfly21 (
               sum_i[i]      <= 0;
               diff_r[i]     <= 0;
               diff_i[i]     <= 0;
-              sat_sum_r[i]  <= 0;
-              sat_sum_i[i]  <= 0;
-              sat_diff_r[i] <= 0;
-              sat_diff_i[i] <= 0;
            end
        end else if (valid_in) begin
           for (int i = 0; i < 2; i++) begin
@@ -84,7 +80,20 @@ module butterfly21 (
             sum_i[i+12]   <= input_imag[i+12] + input_imag[i+14];
             diff_r[i+14]  <= input_real[i+12] - input_real[i+14];
             diff_i[i+14]  <= input_imag[i+12] - input_imag[i+14];
-
+          end
+      end
+end
+    always_ff @(posedge clk or negedge rstn) begin
+	if (!rstn) begin
+	   for(int i=0; i< 16;i++) begin
+	   sat_sum_r[i] <=0;
+	   sat_sum_i[i] <=0;
+	   sat_diff_r[i] <=0;
+           sat_diff_i[i] <=0;
+        end
+	end
+    else begin
+	  for (int i =0; i<16; i++)begin
             // saturation 처리 (합)
             sat_sum_r[i]  <= (sum_r[i]  >  8191) ?  8191 :
                              (sum_r[i]  < -8192) ? -8192 : sum_r[i];
@@ -96,9 +105,9 @@ module butterfly21 (
                              (diff_r[i] < -8192) ? -8192 : diff_r[i];
             sat_diff_i[i] <= (diff_i[i] >  8191) ?  8191 :
                              (diff_i[i] < -8192) ? -8192 : diff_i[i];
-           end
-       end
-   end
+          end
+	end
+    end
 
 
     // 조합 Twiddle 곱
@@ -138,7 +147,7 @@ module butterfly21 (
             valid_in_d3 <= valid_in_d2;
             valid_in_d4 <= valid_in_d3;
 
-            if (valid_in_d4) begin
+            if (valid_in_d2) begin
                 tw_cnt  <= tw_cnt + 1;
                 clk_cnt <= clk_cnt + 1;
                 for (int i = 0; i < 16; i++) begin
