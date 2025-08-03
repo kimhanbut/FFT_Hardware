@@ -17,5 +17,4 @@ module twiddle_mul (
             data_im_out[i] = data_re_in[i] * twf_im_in[i] + data_im_in[i] * twf_re_in[i];
         end
     end
-
 endmodule
