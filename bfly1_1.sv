@@ -11,10 +11,13 @@ module butterfly11 (
 
     output logic               valid_out,
     output logic signed [13:0] output_real[0:15],
-    output logic signed [13:0] output_imag[0:15],
-    output logic               SR_valid
+    output logic signed [13:0] output_imag[0:15]
 );
 
+
+    //////////////////////////////////////////////////
+    // Variable declaration
+    //////////////////////////////////////////////////
     // 내부 변수
     logic [5:0]
         valid_cnt,
@@ -26,28 +29,9 @@ module butterfly11 (
         valid_in_d4,
         local_valid;  // valid_in 1clk 딜레이, 32clk짜리 valid signal
 
-    // SR_valid 제어
-    always_ff @(posedge clk or negedge rstn) begin
-        if (!rstn) begin
-            valid_cnt   <= 0;
-            local_valid <= 0;
-        end else begin
-            if (valid_in && valid_cnt == 0) begin
-                valid_cnt <= 32;
-            end else if (valid_cnt > 0) begin
-                valid_cnt <= valid_cnt - 1;
-            end
-            local_valid <= (valid_cnt > 0);
-        end
-    end
-
-
-
     // Twiddle 계수 (<2.8> fixed-point)
-    logic signed [9:0] fac_real_add[0:3] = '{256, 256, 256, 181};
-    logic signed [9:0] fac_real_sub[0:3] = '{0, 0, 0, -181};
-    logic signed [9:0] fac_imag_add[0:3] = '{256, 0, 256, -181};
-    logic signed [9:0] fac_imag_sub[0:3] = '{0, -256, 0, -181};
+    logic signed [9:0] fac_real[0:7] = '{256, 256, 256, 0, 256, 181, 256, -181};
+    logic signed [9:0] fac_imag[0:7] = '{0, 0, 0, -256, 0, -181, 0 ,-181};
 
     // 내부 레지스터 및 곱셈 결과
     logic signed [12:0]
@@ -64,8 +48,30 @@ module butterfly11 (
     logic signed [13:0] rd_add_r[0:15], rd_add_i[0:15];
     logic signed [13:0] rd_sub_r[0:15], rd_sub_i[0:15];
 
-    logic [3:0] tw_cnt;  // fac8_1 계수 적용위한 인덱스를 cnt : 0~15
-    logic [2:0] tw_idx;  // fac8_1 계수 인덱스 : 0~7
+    logic [1:0] tw_cnt;  // fac8_1 계수 적용위한 인덱스를 cnt : 0~15
+    logic [1:0] tw_idx, tw_idx_sub;  // sub가 sr 거치면서 align따로 맞춰줘야 함
+
+
+
+
+
+    // SR_valid 제어
+    always_ff @(posedge clk or negedge rstn) begin
+        if (!rstn) begin
+            valid_cnt   <= 0;
+            local_valid <= 0;
+            tw_idx_sub <= 0;
+        end else begin
+            if (valid_in && valid_cnt == 0) begin
+                valid_cnt <= 32;
+            end else if (valid_cnt > 0) begin
+                valid_cnt <= valid_cnt - 1;
+            end
+            local_valid <= (valid_cnt > 0);
+            tw_idx_sub <= tw_idx;
+        end
+    end
+
 
 
 
@@ -88,6 +94,9 @@ module butterfly11 (
         end
     end
 
+
+
+
     shift_reg #(  //32 data point per 1clk -> 16 data point per 1clk
         .DATA_WIDTH(13),
         .SIZE(1),
@@ -105,19 +114,27 @@ module butterfly11 (
 
     // 조합 Twiddle 곱
     always_comb begin
-        tw_idx = tw_cnt[3:2];  // 64포인트마다 8패턴, 상위 3bit 추출
-        for (int i = 0; i < 16; i++) begin
-            // (Re + jIm) × (fac_real + j fac_imag)
-            mul_add_r[i]  = (sum_r[i]  * fac_real_add[tw_idx])-(sum_i[i]  * fac_imag_add[tw_idx]);
-            mul_add_i[i]  = (sum_i[i]  * fac_real_add[tw_idx])+(sum_r[i]  * fac_imag_add[tw_idx]);
-            mul_sub_r[i] = (sr_diff_r[i] * fac_real_sub[tw_idx])-(sr_diff_i[i]  * fac_imag_sub[tw_idx]);
-            mul_sub_i[i] = (sr_diff_i[i] * fac_real_sub[tw_idx])+(sr_diff_r[i] * fac_imag_sub[tw_idx]);
+        tw_idx = tw_cnt;  // 0~3 (4클럭이 한 블록)
+        for (int i = 0; i < 8; i++) begin
+            mul_add_r[i] = (sum_r[i] * fac_real[tw_idx*2]) - (sum_i[i] * fac_imag[tw_idx*2]);
+            mul_add_i[i] = (sum_i[i] * fac_real[tw_idx*2]) + (sum_r[i] * fac_imag[tw_idx*2]);
+            mul_sub_r[i] = (sr_diff_r[i] * fac_real[tw_idx_sub*2+2]) - (sr_diff_i[i] * fac_imag[tw_idx_sub*2+2]);
+            mul_sub_i[i] = (sr_diff_i[i] * fac_real[tw_idx_sub*2+2]) + (sr_diff_r[i] * fac_imag[tw_idx_sub*2+2]);
+        end
 
+        for (int i = 8; i < 16; i++) begin
+            mul_add_r[i] = (sum_r[i] * fac_real[tw_idx*2+1]) - (sum_i[i] * fac_imag[tw_idx*2+1]);
+            mul_add_i[i] = (sum_i[i] * fac_real[tw_idx*2+1]) + (sum_r[i] * fac_imag[tw_idx*2+1]);
+            mul_sub_r[i] = (sr_diff_r[i] * fac_real[tw_idx_sub*2+3]) - (sr_diff_i[i] * fac_imag[tw_idx_sub*2 + 3]);
+            mul_sub_i[i] = (sr_diff_i[i] * fac_real[tw_idx_sub*2+3]) + (sr_diff_r[i] * fac_imag[tw_idx_sub*2 + 3]);
+        end
+        
+        for (int i = 0 ; i<16 ; i++) begin
             rd_add_r[i] = (mul_add_r[i] + 128) >>> 8;
             rd_add_i[i] = (mul_add_i[i] + 128) >>> 8;
             rd_sub_r[i] = (mul_sub_r[i] + 128) >>> 8;
             rd_sub_i[i] = (mul_sub_i[i] + 128) >>> 8;
-        end  // rounding : 8bit shift
+        end
     end
 
     // 출력 레지스터 + valid 제어
@@ -140,8 +157,8 @@ module butterfly11 (
             valid_in_d3 <= valid_in_d2;
             valid_in_d4 <= valid_in_d3;
 
-            if (valid_in_d4) begin
-                tw_cnt  <= tw_cnt + 1;
+            if (valid_in_d2 && valid_in) begin
+                tw_cnt  <= tw_cnt + 2;
                 clk_cnt <= clk_cnt + 1;
                 for (int i = 0; i < 16; i++) begin
                     output_real[i] <= rd_add_r[i];
@@ -160,3 +177,4 @@ module butterfly11 (
     end
 
 endmodule
+
