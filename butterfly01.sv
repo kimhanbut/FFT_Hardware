@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module butterfly01 (
     input  logic         clk,
     input  logic         rstn,
