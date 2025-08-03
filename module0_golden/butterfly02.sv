@@ -1,3 +1,4 @@
+
 `timescale 1ns / 1ps
 
 module butterfly02 (
@@ -39,8 +40,8 @@ module butterfly02 (
 
 
     // Twiddle outputs (from ROM) and 1clk-delayed versions
-    logic [8:0] twf_add_re[0:15], twf_add_im[0:15];
-    logic [8:0] twf_sub_re[0:15], twf_sub_im[0:15];
+    logic signed [8:0] twf_add_re[0:15], twf_add_im[0:15];
+    logic signed [8:0] twf_sub_re[0:15], twf_sub_im[0:15];
 
     logic [8:0] rom1_addr, rom2_addr;
 
@@ -74,7 +75,11 @@ module butterfly02 (
 
 
     // Twiddle multiplication units
-    twiddle_mul MULT1 (
+    twiddle_mul #(
+        .IN_DATA_W (14),
+        .OUT_DATA_W(23),
+        .DATA_SIZE(16)
+    ) MULT_1 (
         .data_re_in (sum_real_reg1),
         .data_im_in (sum_imag_reg1),
         .twf_re_in  (twf_add_re),
@@ -83,7 +88,11 @@ module butterfly02 (
         .data_im_out(mult_add1)
     );
 
-    twiddle_mul MULT2 (
+    twiddle_mul #(
+        .IN_DATA_W (14),
+        .OUT_DATA_W(23),
+        .DATA_SIZE(16)
+    ) MULT_2 (
         .data_re_in (diff_real_reg1),
         .data_im_in (diff_imag_reg1),
         .twf_re_in  (twf_sub_re),
