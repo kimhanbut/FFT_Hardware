@@ -1,11 +1,11 @@
-
 `timescale 1ns / 1ps
 
 module cbfp_shift #(
     parameter IN_WIDTH    = 23,
     parameter OUT_WIDTH   = 11,   // 11bit 출력 (signed)
     parameter SHIFT_WIDTH = 5,     // shift amount: 0~31
-    parameter DATA_NUM = 16
+    parameter DATA_NUM = 16,
+    parameter SHIFT_POLE = 12
 ) (
     input logic signed [IN_WIDTH-1:0] in_real[0:DATA_NUM-1],
     input logic signed [IN_WIDTH-1:0] in_imag[0:DATA_NUM-1],
@@ -47,11 +47,11 @@ module cbfp_shift #(
         for (int i = 0; i < DATA_NUM; i++) begin
             // --- shift ---
 	    if (shift_amt_abs > 12) begin
-                shifted_r[i] = in_real[i] <<< (shift_amt_abs - 12);
-                shifted_i[i] = in_imag[i] <<< (shift_amt_abs - 12);
+                shifted_r[i] = in_real[i] <<< (shift_amt_abs - SHIFT_POLE);
+                shifted_i[i] = in_imag[i] <<< (shift_amt_abs - SHIFT_POLE);
 	end else begin 
-		shifted_r[i] = in_real[i] >>> (12 - shift_amt_abs);
-            	shifted_i[i] = in_imag[i] >>> (12 - shift_amt_abs);
+		shifted_r[i] = in_real[i] >>> (SHIFT_POLE - shift_amt_abs);
+            	shifted_i[i] = in_imag[i] >>> (SHIFT_POLE - shift_amt_abs);
 	end
 
 
