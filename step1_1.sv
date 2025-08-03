@@ -34,7 +34,7 @@ module step1_1 (
     logic       local_valid;
     logic local_valid_d1, local_valid_d2, local_valid_d3, local_valid_d4;
 
-    assign dout_valid = local_valid_d4;
+    assign dout_valid = local_valid_d3;
 
     // 32 clk 짜리 valid
     always_ff @(posedge clk or negedge rstn) begin
@@ -106,7 +106,7 @@ module step1_1 (
     butterfly11 BF_11 (
         .clk(clk),
         .rstn(rstn),
-        .valid_in(bfly_ctrl),  // 입력 유효 신호
+        .valid_in(bfly_ctrl_delay),  // 입력 유효 신호
         .input_real_a(sr1_dout_i),  // [0:15] 12bit signed
         .input_imag_a(sr1_dout_q),
         .input_real_b(bf_in_i),
