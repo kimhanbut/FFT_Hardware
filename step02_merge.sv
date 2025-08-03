@@ -151,7 +151,12 @@ shift_reg #(
 );
 
 // Butterfly00
-butterfly00 BF_00 (
+butterfly00 #(
+        .IN_DATA_W(9),
+        .OUT_DATA_W(10),
+        .UNIT_SIZE(16),
+        .CLK_CNT(16)
+) BF_00 (
         .clk(clk),
         .rstn(rstn),
         .valid_in(bf00_val),
