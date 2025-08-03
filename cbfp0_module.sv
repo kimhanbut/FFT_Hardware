@@ -47,7 +47,7 @@ module cbfp_module0 #(
         .DATA_WIDTH(IN_WIDTH),
         .SIZE(5),
         .IN_SIZE(16)
-    ) SR_64 (
+    ) SR_64_CBFP (
         .clk(clk),
         .rstn(rstn),
         .din_valid(din_valid),
@@ -95,7 +95,9 @@ module cbfp_module0 #(
     );
 
 
-    cbfp_final_min FINAL_MIN (
+    cbfp_final_min #(
+        .WIDTH(5)
+    ) FINAL_MIN (
         .clk(clk),
         .rstn(rstn),
         .in_re_min (arr_min_re),
@@ -110,9 +112,9 @@ module cbfp_module0 #(
         .IN_WIDTH(IN_WIDTH),
         .OUT_WIDTH(OUT_WIDTH),
         .SHIFT_WIDTH(SHIFT_WIDTH),
-	.DATA_NUM(16),
-	.SHIFT_POLE(12)
-    ) U_SHIFT (
+	    .DATA_NUM(16),
+	    .SHIFT_POLE(12)
+    ) U_CBFP_SHIFT (
         .in_real(sr_out_re),
         .in_imag(sr_out_im),
         .shift_amt_re(final_min_re),
