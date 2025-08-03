@@ -109,8 +109,7 @@ module cbfp_module0 #(
     cbfp_shift #(
         .IN_WIDTH(IN_WIDTH),
         .OUT_WIDTH(OUT_WIDTH),
-        .SHIFT_WIDTH(SHIFT_WIDTH),
-	.DATA_WIDTH(8)
+        .SHIFT_WIDTH(SHIFT_WIDTH)
     ) U_SHIFT (
         .in_real(sr_out_re),
         .in_imag(sr_out_im),
