@@ -10,7 +10,7 @@ module module1 (
     output logic signed [11:0] module1_dout_i[0:15], // CBFP 처리 후 최종 정규화된 출력
     output logic signed [11:0] module1_dout_q[0:15],
     output logic [4:0] index2_re[0:15],
-    output logic [4:0] index2_im[0:15],
+    output logic [4:0] index2_im[0:15]
 );
 
 
