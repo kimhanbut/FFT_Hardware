@@ -17,7 +17,7 @@ module cbfp_module1 #(
     output logic signed [OUT_WIDTH-1:0] bfly12_real [0:15], // CBFP 처리 후 최종 정규화된 출력
     output logic signed [OUT_WIDTH-1:0] bfly12_imag [0:15],
     output logic [SHIFT_WIDTH-1:0] index2_re [0:15],
-    output logic [SHIFT_WIDTH-1:0] index2_im [0:15],
+    output logic [SHIFT_WIDTH-1:0] index2_im [0:15]
 );
 
     // Intermediate magnitude wires
