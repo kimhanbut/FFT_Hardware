@@ -16,8 +16,8 @@ module cbfp_module0 #(
     output logic valid_out,
     output logic signed [OUT_WIDTH-1:0] bfly02_real [0:15], // CBFP 처리 후 최종 정규화된 출력
     output logic signed [OUT_WIDTH-1:0] bfly02_imag[0:15],
-    output logic [SHIFT_WIDTH-1:0] index1_re,
-    output logic [SHIFT_WIDTH-1:0] index1_im
+	output logic [SHIFT_WIDTH-1:0] index1_re[0:15],
+	output logic [SHIFT_WIDTH-1:0] index1_im[0:15]
 );
 
     // Intermediate magnitude wires
@@ -40,8 +40,7 @@ module cbfp_module0 #(
     logic signed [IN_WIDTH-1:0] sr_out_re[0:15];//shift reg 출력-> shift 연산으로 들어감
     logic signed [IN_WIDTH-1:0] sr_out_im[0:15];
 
-    assign index1_re = final_min_re;
-    assign index1_im = final_min_im;
+
     ////////////////////////////////////////////////////////////////////
     ////// Shift Register
     ///////////////////////////////////////////////////////////////////
@@ -153,8 +152,20 @@ module cbfp_module0 #(
             end
         end
     end
-
-
+    
+	always_ff @(posedge clk or negedge rstn) begin
+	    if (!rstn) begin
+	        for (int i = 0; i < 16; i++) begin
+	            index1_re[i] <= '0;
+	            index1_im[i] <= '0;
+	        end
+	    end else if (din_valid) begin
+	        for (int i = 0; i < 16; i++) begin
+	            index1_re[i] <= final_min_re;
+	            index1_im[i] <= final_min_im;
+	        end
+	    end
+	end
 
 
 
