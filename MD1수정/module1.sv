@@ -96,7 +96,7 @@ cbfp_module1 #(
     .bfly12_imag(module1_dout_q),
 
     .index2_re(index2_re),
-    .index2_im(index2_im),
+    .index2_im(index2_im)
 );
 
 
