@@ -114,7 +114,7 @@ module butterfly11 (
 
     // 조합 Twiddle 곱
     always_comb begin
-        tw_idx = tw_cnt;  // 0~3 (4클럭이 한 블록)
+        tw_idx = tw_cnt;  
         for (int i = 0; i < 8; i++) begin
             mul_add_r[i] = (sum_r[i] * fac_real[tw_idx*2]) - (sum_i[i] * fac_imag[tw_idx*2]);
             mul_add_i[i] = (sum_i[i] * fac_real[tw_idx*2]) + (sum_r[i] * fac_imag[tw_idx*2]);
