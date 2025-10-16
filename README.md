@@ -117,6 +117,12 @@
 ## 5. 검증 결과
 <br>
 
+<img width="1000" src="https://github.com/user-attachments/assets/c2ab0fd5-2c80-407c-9f7d-76f46da239b4" />
+
+##### Clock Latency
+- Clock latency는 90으로 나왔습니다.
+<br>
+
 #### 5-1. COS 입력에 대한 검증 결과
 
 
