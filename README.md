@@ -1,34 +1,168 @@
-# FFT_Hardware
+# Radix 2² 기반 512 Fixed-Point FFT 하드웨어설계
+![512 FFT HardWare Diagram](image.png)
+---
+
+<br>
+<br>
+
+## 1. 개요
+
+- FFT 연산을 하드웨어로 진행하는 IP 설계 프로젝트입니다
+- 4명이 한 조를 이루어 진행한 팀 프로젝트입니다
+- 하드웨어 기반이므로 Fixed point로 진행되었고, Radix 2 연산 모듈 두개를 이용하여 연산하는 형태입니다.
+- butterfly연산과 twiddle factor연산 및 floating point 연산만큼의 정확도 보장을 위해 CBFP(Convergent Block Floating Point)모듈이 추가된 구조입니다.
+---
+<br>
+
+
+## 2. 역할
+
+- UART FIFO를 이용하여 PC와 패킷형태의 데이터 통신
+- Python GUI를 이용하여 수신한 데이터를 PC화면 상에 표현
+- Python GUI에서 버튼을 통해 FPGA로 필요한 동작 신호 송신
+- 동작 중 발생하는 Error 및 타이밍 문제 해결
+---
+<br>
+
+
+## 3. Floating Point와 Fixed Point
+
+- 하드웨어 내부적으로 floating point 연산을 하는 것은 불가능합니다.
+- 각 module 입, 출력 부분 마다 bit 수를 조절하며 rounding, saturation, CBFP등의 비트 관리가 필수적입니다.
+- 아래는 floating point fft와 CBFP를 적용하지 않는 fixed point fft의 연산결과입니다.
+<img src="image-3.png" width="800">
+- 이렇듯 hardware연산에서 floating point 연산의 정확도에 근접하기 위해서는 CBFP와 같은 연산이 필수적입니다.
+- 아래는 CBFP 적용 전과 이후의 SQNR그래프입니다.
+<img src="image-4.png" width="800">
+---
+<br>
+
+
+## 4. 시스템 구성도
+<br>
+
+<img src="image-5.png" width="400">
+
+###### FFT Top module block diagram
+- 초기 9bit 입력이 실, 허수부에 16개씩 병렬적으로 입력됩니다.
+- 즉, 512개 입력은 32clk 동안 들어오게 됩니다.
+- 출력은 13bit로 512개 data가 동시에 출력됩니다.
+---
+<br>
+
+<img src="image-11.png" width="1000">
+
+
+###### Sub-module block diagram
+- 입력이 16개씩 병렬적으로 들어오게 되고, 첫번째 butterfly 연산은 258개 data를 덧, 뺄셈 하므로 shfit regisgter가 필수적입니다.
+- 이후 butterfly 연산도 1clk 16개씩 들어오기 때문에 128개씩 두번 연산으로 인해 128크기의 shift 레지스터가 하나 필요합니다.
+- 128개씩 연산을 두번 해야 하므로 256개 데이터를 저장해줄 shift regisgter도 하나 필요합니다.
+- 이후 연산 구조는 butterfly1_2까지 동일한 구조를 가집니다.
 
 ---
-### 7/25 진행사항
-- step0_0 simulation, verification
-- bfly0_1 design
-- twf_m0 rom, multiplyer design(verification X)
-- CBFP design(verification X)
+<br>
+
+<img src="image-12.png" width="1000">
+
+###### Timing Diagram
+- butterfly12 이후부터는 1클럭 마다 한번의 butterfly연산이 진행되므로 shift register가 필요 없어집니다.
+- 병렬적으로 들어오는 16개 데이터를 순서대로 병렬 연산하고 출력하게 됩니다.
+
 ---
-### 7/26 진행사항
-- step0_1 disign complete, (rough verification)
+<br>
+
+- **step0**
+<img src="image-6.png" width="600">
+    - 들어오는 값에 대해 덧셈과 뺄셈 연산을 진행합니다.
+    - Twiddle factor를 곱한 뒤 결과를 출력합니다. Twiddle factor = [1, 1, 1, -j]
+
+<br>
+
+- **step1**
+<img src="image-7.png" width="600">
+    - 들어오는 값에 대해 덧셈과 뺄셈 연산을 진행합니다.
+    - Twiddle factor를 곱한 뒤 결과를 출력합니다. Twiddle factor = [1, 1, 1, -1i, 1, 0.7071-0.7071j, 1, -0.7071-0.7071j]
+<br>
+
+- **step2**
+<img src="image-8.png" width="600">
+    - 들어오는 값에 대해 덧셈과 뺄셈 연산을 진행합니다.
+    - Twiddle factor를 곱한 뒤 결과를 출력합니다.
+    - 이 경우 twiddle factor는 512 point에 대해 각각 다른 값이 배정되므로 ROM의 형태로 저장하여 연산을 진행합니다.
 ---
-### 7/27 진행사항 및 유의사항
-- step간 merge시에 butterfly output이 그 step이 내보내는 butterfly control signal(다음 단의 din_valid)보다 한 클럭 delay 되어있음에 유의  
-  즉, butterfly control signal을 1clk delay 시켜서 사용해야 함
-- butterfly_2 design complete(rough verification)
-- cbfp revision(error 아직 있음)
+<br>
+
+
+- **CBFP**
+    - 일정 단위로 block으로 판단한 뒤 연산을 진행합니다.
+    <img src="image-9.png" width="600">
+    - block 내부의 각 값에 대하여, signbit 갯수를 셉니다.
+    <img src="image-10.png" width="600">
+    - block 내부에서 count한 signbit 갯수 중 최솟값을 찾아냅니다.
+    - 실수와 허수 중 더 작은 최솟값을 기준으로 right shift합니다.
 ---
-### 7/28 진행사항
-- step0, step1 오류 확인 및 수정
-- butterfly_2 design complete, cbfp re-design(block unit operation is not applied)
-- cbfp revision
----
-### 7/29 진행사항
-- step0, step1 오류 확인 및 수정완료(main brench 내 모든 module 최신화->shift reg 변경이 그 사유)
-- cbfp design complete, merge with former module
-- step0~step2 merge complete(timing problem is not yet solved)
-- step1_0 design(verification error detected)
-- **necessray verification** -> module0 top(with golden)
----
-### 8/03 프로젝트 완료 소감
-- RTL deisgn, verification은 만족스러웠으나 연속적인 동작에서의 요구사항을 만족하지 못함
-- FPGA에서 제대로된 값이 나오지 않는 이유는 최신화가 되지 않았기 때문?
-- Synthesis는 마지막까지 제대로된 netlist가 산출되지 않았음
+<br>
+
+
+
+
+## 5. 검증 결과
+
+<br>
+
+
+<br>
+
+## 6. Trouble Shooting
+
+
+>---
+>#### 문제 인식
+>
+>- UART 모듈과 PC간 통신 도중 Python에서 받은 data에 misalignment 문제가 발생
+>
+>#### 원인 분석
+>
+>- UART FIFO의 TX packet에 header를 추가 및 python에서 확인하는 방법 시도
+>- UART TX packet을 받으면 python에서 ACK신호를 보내서 handshake시도
+>
+>→ 두 방법 모두 실패 →하드웨어에서 보내는 TX 자체에 문제가 있다고 판단
+>
+>- Baud rate를 계산해본 결과 9600의 baud rate는 12 Byte 전송에만 12ms 소요 → 전송중에 FIFO 내부 데이터가 갱신될 가능성 높다고 판단 → 신뢰성 보장 X
+>
+>#### 해결 방법
+>
+>- 간단히 baud rate를 115200으로 증가시킴 → 12 Byte 전송에 1ms 소요 → 전송중 내부 데이터 갱신 확률 대폭 감소 + header 추가로 신뢰성 증가
+>---
+
+<br>
+
+## 개발 일정 및 진행 상황
+>---
+> **7/25 진행사항**
+> - step0_0 simulation, verification
+> - bfly0_1 design
+> - twf_m0 rom, multiplyer design(verification X)
+> - CBFP design(verification X)
+> ---
+> **7/26 진행사항**
+> - step0_1 disign complete, (rough verification)
+> ---
+> **7/27 진행사항 및 유의사항**
+> - step간 merge시에 butterfly output이 그 step이 내보내는 butterfly control signal(다음 단의 din_valid)보다 한 클럭 delay 되어있음에 유의  
+>   즉, butterfly control signal을 1clk delay 시켜서 사용해야 함
+> - butterfly_2 design complete(rough verification)
+> - cbfp revision(error 아직 있음)
+> ---
+> **7/28 진행사항**
+> - step0, step1 오류 확인 및 수정
+> - butterfly_2 design complete, cbfp re-design(block unit operation is not applied)
+> - cbfp revision
+> ---
+> **7/29 진행사항**
+> - step0, step1 오류 확인 및 수정완료(main brench 내 모든 module 최신화->shift reg 변경이 그 사유)
+> - cbfp design complete, merge with former module
+> - step0~step2 merge complete(timing problem is not yet solved)
+> - step1_0 design(verification error detected)
+> - **necessray verification** -> module0 top(with golden)
+> ---
