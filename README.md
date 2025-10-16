@@ -204,6 +204,14 @@
 >
 >#### VIVADO Bitstream
 >
+><img width="800" src="https://github.com/user-attachments/assets/1af10955-07b3-478c-9e0c-33b516f8c5ab" />
+>
+>- Zynq UltraScale+ FPGA 기준으로 LUT 15%, DSP 28% 사용했습니다.
+><br>
+><img width="800" src="https://github.com/user-attachments/assets/7128f028-e3ef-4bf5-a953-cac9aaeb5377" />
+><img width="600" src="https://github.com/user-attachments/assets/20641c7e-9d19-497d-a65e-df62828b7259" />
+>
+>- 100MHz clk 기준으로 2.345ns의 positive slack을 기록하며 Timing constraint도 만족한 것을 확인 가능합니다.
 >---
 >
 
