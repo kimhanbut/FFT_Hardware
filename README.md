@@ -214,14 +214,53 @@
 >- 100MHz clk 기준으로 2.345ns의 positive slack을 기록하며 Timing constraint도 만족한 것을 확인 가능합니다.
 >---
 >
+<br>
 
 ## 6. Trouble Shooting
 
 
 >---
+>### CBFP Error
 >#### 문제 인식
 >
->- UART 모듈과 PC간 통신 도중 Python에서 받은 data에 misalignment 문제가 발생
+><img width="800" src="https://github.com/user-attachments/assets/a4b8acdf-4138-4943-82be-3a6568c6f2e4" />
+>
+>##### Module0 Output Error(왼쪽이 golden reference)
+>- 위 사진과 같이 값이 64의 배수 단위로 오류가 발생했습니다. (64개, 128개 단위로 오류 부분 발생)
+>- 또한 사진에서 확인할 수 있듯, 실수 또는 허수 부분에만 오류가 발생하는 것을 확인 가능합니다.
+>---
+><br>
+>
+>#### 원인 분석
+><img width="400" src="https://github.com/user-attachments/assets/1a8069a7-8602-4657-95d6-b2d756ae7c29" />
+>
+>- 다른 오류 구간에서도 마찬가지로 실수 또는 허수 한 부분에서만 오류가 발생했습니다.
+>- 추가로 오류가 발생한 값은 모두 2배 차이가 난다는 사실을 확인 할 수 있었습니다.
+>- Module0에서 64개 데이터를 한 블록으로 묶어서 shift 연산을 하는 CBFP 모듈에 문제가 있다고 판단했습니다.
+>---
+><br>
+>
+>#### 해결 방법
+><img width="350" src="https://github.com/user-attachments/assets/de6f1e9e-2906-48d2-bb3c-19517887f52f" />
+>
+>- Shift 연산 로직에서 최종 shift amount를 정하지 않고 실수와 허수 따로 shift 연산을 적용한 문제를 발견하여 오류를 해결했습니다.
+>---
+><br>
+>
+>### Logic Synthesis Error
+>#### 문제 인식
+><img width="400" src="https://github.com/user-attachments/assets/3d2b9c09-6058-4368-b980-7e5b0ad2acee" />
+>
+>##### Top module report
+><img width="400" src="https://github.com/user-attachments/assets/a8542b43-05a6-40c5-8a0f-d0f829ddc58d" />
+>
+>##### Module0 report
+>
+>- Top module area가 9030으로 나오는 문제가 발생했습니다.
+>- Sub-module인 module0의 합성 결과가 40272가 나왔기 때문에 명백한 오류라고 판단했습니다.
+>- Top module의 data input 문제로 이후 module에 dead cell이 발생했을 것이라고 예상했습니다.
+>---
+><br>
 >
 >#### 원인 분석
 >
@@ -236,7 +275,6 @@
 >
 >- 간단히 baud rate를 115200으로 증가시킴 → 12 Byte 전송에 1ms 소요 → 전송중 내부 데이터 갱신 확률 대폭 감소 + header 추가로 신뢰성 증가
 >---
-
 <br>
 
 ## 개발 일정 및 진행 상황
