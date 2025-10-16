@@ -167,6 +167,9 @@
 
 ## 6. 합성 결과
 <img width="400" src="https://github.com/user-attachments/assets/e3b2258e-c9e7-4807-9aa3-f66b7c3df768" />
+<img width="600" src="https://github.com/user-attachments/assets/db12c202-b6b1-4d09-98ef-1268618fbfe9" />
+
+
 
 ## 6. Trouble Shooting
 
