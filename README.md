@@ -216,11 +216,11 @@
 >
 <br>
 
-## 6. Trouble Shooting
+## 7. Trouble Shooting
 
 
 >---
->### CBFP Error
+>## CBFP Error
 >#### 문제 인식
 >
 ><img width="800" src="https://github.com/user-attachments/assets/a4b8acdf-4138-4943-82be-3a6568c6f2e4" />
@@ -247,7 +247,7 @@
 >---
 ><br>
 >
->### Logic Synthesis Error
+>## Logic Synthesis Error
 >#### 문제 인식
 ><img width="400" src="https://github.com/user-attachments/assets/3d2b9c09-6058-4368-b980-7e5b0ad2acee" />
 >
@@ -255,6 +255,7 @@
 ><img width="400" src="https://github.com/user-attachments/assets/a8542b43-05a6-40c5-8a0f-d0f829ddc58d" />
 >
 >##### Module0 report
+><br>
 >
 >- Top module area가 9030으로 나오는 문제가 발생했습니다.
 >- Sub-module인 module0의 합성 결과가 40272가 나왔기 때문에 명백한 오류라고 판단했습니다.
@@ -263,21 +264,35 @@
 ><br>
 >
 >#### 원인 분석
+><img width="400" src="https://github.com/user-attachments/assets/687349bf-433c-4ec6-aec1-de6d5f55b7f2" />
 >
->- UART FIFO의 TX packet에 header를 추가 및 python에서 확인하는 방법 시도
->- UART TX packet을 받으면 python에서 ACK신호를 보내서 handshake시도
+>##### Module0 input단 shift register(수정 전)
+><img width="400" src="https://github.com/user-attachments/assets/82babf17-d96f-4c35-b268-31d90d7615c8" />
 >
->→ 두 방법 모두 실패 →하드웨어에서 보내는 TX 자체에 문제가 있다고 판단
+>##### Module0 input단 shift register(수정 후)
+><br>
 >
->- Baud rate를 계산해본 결과 9600의 baud rate는 12 Byte 전송에만 12ms 소요 → 전송중에 FIFO 내부 데이터가 갱신될 가능성 높다고 판단 → 신뢰성 보장 X
+>- module0의 input에 연결된 shift register 구조가 2-dimension-array 구조라 합성이 되지 않을 수 있다는 의견에 1차원 배열 구조로 수정했으나 변경되지 않았습니다.
+>- 그래서 module0의 step0는 area가 golden reference와 비슷하게 나오고, step1, step2부터 이상이 발생했다는 점에 초점을 맞췄습니다.
+>---
+><br>
 >
 >#### 해결 방법
+><img width="600" src="https://github.com/user-attachments/assets/b257a88f-decb-41e6-ad05-aaf9fbe29b2a" />
 >
->- 간단히 baud rate를 115200으로 증가시킴 → 12 Byte 전송에 1ms 소요 → 전송중 내부 데이터 갱신 확률 대폭 감소 + header 추가로 신뢰성 증가
+>##### module0 step1 error code
+><img width="600" src="https://github.com/user-attachments/assets/272b5e2c-255f-40ef-b226-9510c82cc245" />
+>
+>##### module0 step1 revised code
+><br>
+>
+>- Module0의 step1 RTL의 twiddle factor 부분이 logic으로 assign 된 것을 확인했습니다.
+>- 위와 같은 선언 및 초기화는 정적 상수 초기화로 취급되지 않아 합성 시 무시됩니다.
+>- 정적 상수 초기화로 취급되는 parameter로 초기화하여 문제를 해결했습니다.
 >---
 <br>
 
-## 개발 일정 및 진행 상황
+## 8. 개발 일정 및 진행 상황
 >---
 > **7/25 진행사항**
 > - step0_0 simulation, verification
