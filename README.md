@@ -18,10 +18,10 @@
 
 ## 2. 역할
 
--Top module merge
--CBFP module design
--Butterfly operation design
--Sub module verification
+- Top module merge
+- CBFP module design
+- Butterfly operation design
+- Sub module verification
 ---
 <br>
 
