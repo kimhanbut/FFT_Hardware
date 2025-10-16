@@ -33,10 +33,9 @@
 ## 2. 역할
 >---
 >#### 김한벗
->- Top module merge
->- CBFP module design
+>- Top module merge & verification
 >- Butterfly operation design
->- Sub module verification
+>- Sub module merge & verification
 >---
 <br>
 
