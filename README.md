@@ -101,9 +101,11 @@
 
 - **CBFP**
     - 일정 단위로 block으로 판단한 뒤 연산을 진행합니다.
-    <img src="image-9.png" width="600">
+    <img width="600" src="https://github.com/user-attachments/assets/c5431c34-1bf0-45ed-ad1b-3586b3a1a192" />
+
     - block 내부의 각 값에 대하여, signbit 갯수를 셉니다.
-    <img src="image-10.png" width="600">
+    <img width="600" src="https://github.com/user-attachments/assets/26049084-b671-452d-bb49-87c5724ad3ce" />
+
     - block 내부에서 count한 signbit 갯수 중 최솟값을 찾아냅니다.
     - 실수와 허수 중 더 작은 최솟값을 기준으로 right shift합니다.
 ---
