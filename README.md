@@ -18,10 +18,11 @@
 
 ## 2. 역할
 
-- Top module merge
-- CBFP module design
-- Butterfly operation design
-- Sub module verification
+>##### 김한벗
+>- Top module merge
+>- CBFP module design
+>- Butterfly operation design
+>- Sub module verification
 ---
 <br>
 
@@ -163,6 +164,10 @@
 ---
 <br>
 
+
+## 6. 합성 결과
+<img width="400" src="https://github.com/user-attachments/assets/e3b2258e-c9e7-4807-9aa3-f66b7c3df768" />
+
 ## 6. Trouble Shooting
 
 
@@ -216,3 +221,9 @@
 > - step1_0 design(verification error detected)
 > - **necessray verification** -> module0 top(with golden)
 > ---
+
+
+
+
+
+
