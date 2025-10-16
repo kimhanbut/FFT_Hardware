@@ -1,8 +1,22 @@
 # Radix 2² 기반 512 Fixed-Point FFT 하드웨어설계
 <img width="1000" src="https://github.com/user-attachments/assets/19bb2e17-0a7d-48be-873d-beb99b2c52a8" />
 
----
+<br>
 
+---
+## 📑 목차
+- [1. 개요](#1-개요)
+- [2. 역할](#2-역할)
+- [3. Floating Point와 Fixed Point](#3-floating-point와-fixed-point)
+- [4. 시스템 구성도](#4-시스템-구성도)
+- [5. 검증 결과](#5-검증-결과)
+  - [5-1. COS 입력에 대한 검증 결과](#5-1-cos-입력에-대한-검증-결과)
+  - [5-2. Random 입력에 대한 검증 결과](#5-2-random-입력에-대한-검증-결과)
+- [6. Logic Synthesis & VIVADO bitstream](#6-logic-synthesis--vivado-bitstream)
+- [7. Trouble Shooting](#7-trouble-shooting)
+- [8. 개발 일정 및 진행 상황](#8-개발-일정-및-진행-상황)
+
+---
 <br>
 <br>
 
