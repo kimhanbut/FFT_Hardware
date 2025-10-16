@@ -126,7 +126,8 @@
 #### 5-1. COS 입력에 대한 검증 결과
 <img width="800" src="https://github.com/user-attachments/assets/9fb02833-7c49-486d-9d84-97e9c67ca5a6" />
 <img width="800" src="https://github.com/user-attachments/assets/b620ed31-2e85-4d87-9b12-dea93743260a" />
-<img width="800" src="https://github.com/user-attachments/assets/489e3b6d-9ae1-4af7-9ed9-30e0cd809c96" />
+<img width="800" src="https://github.com/user-attachments/assets/06ce61c6-7110-4f65-a289-d54d036f85f0" />
+
 <img width="800" src="https://github.com/user-attachments/assets/99e765b4-157a-4ef6-a955-797627ce5295" />
 <img width="800" src="https://github.com/user-attachments/assets/7c36fe81-91f0-413b-a93b-cb31f24f4fe9" />
 <img width="800" src="https://github.com/user-attachments/assets/e2a1094c-6c54-4eae-971a-af642a9677ae" />
