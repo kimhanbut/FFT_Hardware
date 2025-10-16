@@ -18,10 +18,10 @@
 
 ## 2. 역할
 
-- UART FIFO를 이용하여 PC와 패킷형태의 데이터 통신
-- Python GUI를 이용하여 수신한 데이터를 PC화면 상에 표현
-- Python GUI에서 버튼을 통해 FPGA로 필요한 동작 신호 송신
-- 동작 중 발생하는 Error 및 타이밍 문제 해결
+-Top module merge
+-CBFP module design
+-Butterfly operation design
+-Sub module verification
 ---
 <br>
 
@@ -115,10 +115,18 @@
 
 
 ## 5. 검증 결과
-
 <br>
 
+#### 5-1. COS 입력에 대한 검증 결과
 
+
+---
+<br>
+
+#### 5-2. Random 입력에 대한 검증 결과
+
+
+---
 <br>
 
 ## 6. Trouble Shooting
