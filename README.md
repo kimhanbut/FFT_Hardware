@@ -17,13 +17,13 @@
 
 
 ## 2. 역할
-
->##### 김한벗
+>---
+>#### 김한벗
 >- Top module merge
 >- CBFP module design
 >- Butterfly operation design
 >- Sub module verification
----
+>---
 <br>
 
 
@@ -118,58 +118,94 @@
 ## 5. 검증 결과
 <br>
 
-<img width="1000" src="https://github.com/user-attachments/assets/c2ab0fd5-2c80-407c-9f7d-76f46da239b4" />
-
-##### Clock Latency
-- Clock latency는 90으로 나왔습니다.
+>---
+><img width="1000" src="https://github.com/user-attachments/assets/c2ab0fd5-2c80-407c-9f7d-76f46da239b4" />
+>
+>##### Clock Latency
+> - Clock latency는 90으로 나왔습니다.
+>---
+<br>
 <br>
 
-#### 5-1. COS 입력에 대한 검증 결과
-<img width="800" src="https://github.com/user-attachments/assets/9fb02833-7c49-486d-9d84-97e9c67ca5a6" />
-
-##### Module0 verification with Matlab golden reference
-- RTL로 설계한 module0 output과 Matlab golden reference의 module0 output 동일성 검사 결과입니다.
----
+>---
+>#### 5-1. COS 입력에 대한 검증 결과
+><img width="800" src="https://github.com/user-attachments/assets/9fb02833-7c49-486d-9d84-97e9c67ca5a6" />
+>
+>##### Module0 verification with Matlab golden reference
+>- RTL로 설계한 module0 output과 Matlab golden reference의 module0 output 동일성 검사 결과입니다.
+>---
+><br>
+>
+><img width="800" src="https://github.com/user-attachments/assets/b620ed31-2e85-4d87-9b12-dea93743260a" />
+>
+>##### Module1 verification with Matlab golden reference
+>- RTL로 설계한 module1 output과 Matlab golden reference의 module1 output 동일성 검사 결과입니다.
+>---
+><br>
+>
+><img width="800" src="https://github.com/user-attachments/assets/06ce61c6-7110-4f65-a289-d54d036f85f0" />
+>
+>##### Module2 verification with Matlab golden reference
+>- RTL로 설계한 module2 output과 Matlab golden reference의 module2 output 동일성 검사 결과입니다.
+>---
+><br>
+>
+><img width="800" src="https://github.com/user-attachments/assets/99e765b4-157a-4ef6-a955-797627ce5295" />
+>
+>##### Module2 verification with Matlab golden reference
+>- RTL로 설계한 module2 output과 Matlab golden reference의 module2 output 동일성 검사 결과입니다.
+>- Butterfly 연산으로 인해 data의 순서가 bit reversal 되어 있어, 하드웨어적으로 reorder 시킨 결과물과 비교한 사진입니다.
+>- Fixed point라 큰 출력값이 나왔으나, 동일한 경향성을 보이는 것을 그래프를 통해 확인 가능합니다
+>---
 <br>
 
-<img width="800" src="https://github.com/user-attachments/assets/b620ed31-2e85-4d87-9b12-dea93743260a" />
-
-##### Module1 verification with Matlab golden reference
-- RTL로 설계한 module1 output과 Matlab golden reference의 module1 output 동일성 검사 결과입니다.
----
+>---
+>#### 5-2. Random 입력에 대한 검증 결과
+><img width="800" src="https://github.com/user-attachments/assets/7c36fe81-91f0-413b-a93b-cb31f24f4fe9" />
+>
+>##### Module0 verification with Matlab golden reference
+>- RTL로 설계한 module0 output과 Matlab golden reference의 module0 output 동일성 검사 결과입니다.
+>---
+><br>
+>
+><img width="800" src="https://github.com/user-attachments/assets/e2a1094c-6c54-4eae-971a-af642a9677ae" />
+>
+>##### Module1 verification with Matlab golden reference
+>- RTL로 설계한 module1 output과 Matlab golden reference의 module1 output 동일성 검사 결과입니다.
+>---
+><br>
+><img width="800" src="https://github.com/user-attachments/assets/f31289d0-1c7e-487d-a59f-cecc0fed17cb" />
+>
+>##### Module2 verification with Matlab golden reference
+>- RTL로 설계한 module2 output과 Matlab golden reference의 module2 output 동일성 검사 결과입니다.
+>---
+><br>
+><img width="800" src="https://github.com/user-attachments/assets/77157ebc-e6d8-4b06-890b-10b0a7a4823e" />
+>
+>##### Module2 verification with Matlab golden reference
+>- RTL로 설계한 module2 output과 Matlab golden reference의 module2 output 동일성 검사 결과입니다.
+>- Butterfly 연산으로 인해 data의 순서가 bit reversal 되어 있어, 하드웨어적으로 reorder 시킨 결과물과 비교한 사진입니다.
+>- Fixed point라 큰 출력값이 나왔으나, 동일한 경향성을 보이는 것을 그래프를 통해 확인 가능합니다
+>---
 <br>
 
-<img width="800" src="https://github.com/user-attachments/assets/06ce61c6-7110-4f65-a289-d54d036f85f0" />
-
-##### Module2 verification with Matlab golden reference
-- RTL로 설계한 module2 output과 Matlab golden reference의 module2 output 동일성 검사 결과입니다.
----
-<br>
-
-<img width="800" src="https://github.com/user-attachments/assets/99e765b4-157a-4ef6-a955-797627ce5295" />
-
-##### Module2 verification with Matlab golden reference
-- RTL로 설계한 module2 output과 Matlab golden reference의 module2 output 동일성 검사 결과입니다.
-- Butterfly 연산으로 인해 data의 순서가 bit reversal 되어 있어, 하드웨어적으로 reorder 시킨 결과물과 비교한 사진입니다.
-- Fixed point라 큰 출력값이 나왔으나, 동일한 경향성을 보이는 것을 그래프를 통해 확인 가능합니다
----
-<br>
-
-#### 5-2. Random 입력에 대한 검증 결과
-<img width="800" src="https://github.com/user-attachments/assets/7c36fe81-91f0-413b-a93b-cb31f24f4fe9" />
-<img width="800" src="https://github.com/user-attachments/assets/e2a1094c-6c54-4eae-971a-af642a9677ae" />
-<img width="800" src="https://github.com/user-attachments/assets/f31289d0-1c7e-487d-a59f-cecc0fed17cb" />
-<img width="800" src="https://github.com/user-attachments/assets/77157ebc-e6d8-4b06-890b-10b0a7a4823e" />
-
----
-<br>
 
 
-## 6. 합성 결과
-<img width="400" src="https://github.com/user-attachments/assets/e3b2258e-c9e7-4807-9aa3-f66b7c3df768" />
-<img width="600" src="https://github.com/user-attachments/assets/db12c202-b6b1-4d09-98ef-1268618fbfe9" />
-
-
+## 6. Logic Synthesis & VIVADO bitstream
+>---
+>#### Logic Synthesis(Design compiler)
+><img width="400" src="https://github.com/user-attachments/assets/e3b2258e-c9e7-4807-9aa3-f66b7c3df768" />
+><img width="600" src="https://github.com/user-attachments/assets/db12c202-b6b1-4d09-98ef-1268618fbfe9" />
+>
+>- Logic synthesis 결과 Area는 191,509가 나왔습니다.
+>- 추가로 max_timing report에서는 47.25ps의 positive slack으로 design constraint를 만족했습니다.
+>---
+><br>
+>
+>#### VIVADO Bitstream
+>
+>---
+>
 
 ## 6. Trouble Shooting
 
@@ -224,9 +260,3 @@
 > - step1_0 design(verification error detected)
 > - **necessray verification** -> module0 top(with golden)
 > ---
-
-
-
-
-
-
