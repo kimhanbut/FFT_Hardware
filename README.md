@@ -1,5 +1,6 @@
 # Radix 2² 기반 512 Fixed-Point FFT 하드웨어설계
-![512 FFT HardWare Diagram](image.png)
+<img width="1000" src="https://github.com/user-attachments/assets/19bb2e17-0a7d-48be-873d-beb99b2c52a8" />
+
 ---
 
 <br>
@@ -30,18 +31,19 @@
 - 하드웨어 내부적으로 floating point 연산을 하는 것은 불가능합니다.
 - 각 module 입, 출력 부분 마다 bit 수를 조절하며 rounding, saturation, CBFP등의 비트 관리가 필수적입니다.
 - 아래는 floating point fft와 CBFP를 적용하지 않는 fixed point fft의 연산결과입니다.
-<img src="image-3.png" width="800">
+<img width="800" src="https://github.com/user-attachments/assets/ff5a70ff-cf03-46bd-9b08-3a9752a0a099" />
+
 - 이렇듯 hardware연산에서 floating point 연산의 정확도에 근접하기 위해서는 CBFP와 같은 연산이 필수적입니다.
 - 아래는 CBFP 적용 전과 이후의 SQNR그래프입니다.
-<img src="image-4.png" width="800">
+<img width="800" src="https://github.com/user-attachments/assets/ee4c4cf3-31a8-44ff-a3e6-0942c6cdb2e5" />
+
 ---
 <br>
 
 
 ## 4. 시스템 구성도
 <br>
-
-<img src="image-5.png" width="400">
+<img width="400" src="https://github.com/user-attachments/assets/e9272d1f-6fa2-4220-8b6d-801749385b6a" />
 
 ###### FFT Top module block diagram
 - 초기 9bit 입력이 실, 허수부에 16개씩 병렬적으로 입력됩니다.
@@ -50,7 +52,7 @@
 ---
 <br>
 
-<img src="image-11.png" width="1000">
+<img width="1000" src="https://github.com/user-attachments/assets/21ebcd15-2fae-4e9b-a089-b63b003fd8e9" />
 
 
 ###### Sub-module block diagram
@@ -62,7 +64,8 @@
 ---
 <br>
 
-<img src="image-12.png" width="1000">
+<img width="1000" src="https://github.com/user-attachments/assets/6937dcf3-b569-40a1-8bfc-4df0e0d52ad2" />
+
 
 ###### Timing Diagram
 - butterfly12 이후부터는 1클럭 마다 한번의 butterfly연산이 진행되므로 shift register가 필요 없어집니다.
@@ -72,20 +75,23 @@
 <br>
 
 - **step0**
-<img src="image-6.png" width="600">
+<img width="600" src="https://github.com/user-attachments/assets/d8de862c-e9d3-4167-9418-ab23fd4064ed" />
+
     - 들어오는 값에 대해 덧셈과 뺄셈 연산을 진행합니다.
     - Twiddle factor를 곱한 뒤 결과를 출력합니다. Twiddle factor = [1, 1, 1, -j]
 
 <br>
 
 - **step1**
-<img src="image-7.png" width="600">
+<img width="600" src="https://github.com/user-attachments/assets/3c8feb4f-b365-424a-a8c2-4c30b937c41c" />
+
     - 들어오는 값에 대해 덧셈과 뺄셈 연산을 진행합니다.
     - Twiddle factor를 곱한 뒤 결과를 출력합니다. Twiddle factor = [1, 1, 1, -1i, 1, 0.7071-0.7071j, 1, -0.7071-0.7071j]
 <br>
 
 - **step2**
-<img src="image-8.png" width="600">
+<img width="600" src="https://github.com/user-attachments/assets/4a425ce8-db84-4ee7-8291-c7003a4daa49" />
+
     - 들어오는 값에 대해 덧셈과 뺄셈 연산을 진행합니다.
     - Twiddle factor를 곱한 뒤 결과를 출력합니다.
     - 이 경우 twiddle factor는 512 point에 대해 각각 다른 값이 배정되므로 ROM의 형태로 저장하여 연산을 진행합니다.
