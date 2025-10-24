@@ -121,7 +121,7 @@
     <img width="600" src="https://github.com/user-attachments/assets/26049084-b671-452d-bb49-87c5724ad3ce" />
 
     - block 내부에서 count한 signbit 갯수 중 최솟값을 찾아냅니다.
-    - 실수와 허수 중 더 작은 최솟값을 기준으로 right shift합니다.
+    - 실수와 허수 중 더 작은 최솟값을 기준으로 left shift합니다.
 ---
 <br>
 
